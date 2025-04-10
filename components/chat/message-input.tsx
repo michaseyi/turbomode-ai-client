@@ -51,7 +51,7 @@ export default function MessageInput({ value, onChange, onSendMessage }: Message
 
 	return (
 		<div className="border-t p-4">
-			<div className="mx-auto max-w-3xl">
+			<div className="mx-auto max-w-4xl">
 				<div className="relative flex w-full items-center">
 					<input
 						type="file"

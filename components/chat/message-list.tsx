@@ -15,7 +15,7 @@ type MessageListProps = {
 export default function MessageList({ messages, isTyping, messagesEndRef }: MessageListProps) {
 	return (
 		<ScrollArea className="flex-1 px-4 py-6">
-			<div className="mx-auto max-w-3xl">
+			<div className="mx-auto max-w-4xl">
 				{messages.map((message) => (
 					<Message key={message.id} message={message} />
 				))}
