@@ -148,17 +148,17 @@ function TaskSidebarGroup() {
 export function AppSidebar() {
 	return (
 		<Sidebar collapsible="offcanvas">
-			<SidebarHeader>
-				<SidebarMenu>
+			<SidebarHeader className="h-12">
+				{/* <SidebarMenu>
 					<SidebarMenuItem>
 						<SidebarMenuButton asChild className="data-[slot=sidebar-menu-button]:!p-1.5">
 							<Link href="/">
-								<Image src={Logo} alt="d" className="h-5 w-5" width={100} />
-								<span className="text-base font-medium">Turbomode AI</span>
+								<Image src={Logo} alt="TruboMode AI" className="h-6 w-6" width={100} />
+								<span className="text-base font-medium">TurboMode AI</span>
 							</Link>
 						</SidebarMenuButton>
 					</SidebarMenuItem>
-				</SidebarMenu>
+				</SidebarMenu> */}
 			</SidebarHeader>
 			<SidebarContent>
 				<DefaultSidebarGroup />

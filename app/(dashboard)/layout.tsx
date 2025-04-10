@@ -14,7 +14,7 @@ export default async function Layout({
 		<SidebarProvider defaultOpen={defaultOpen} className="h-full">
 			<AppSidebar />
 			<SidebarInset className="h-full">
-				<SiteHeader title="Turbomode AI" />
+				<SiteHeader title="TurboMode AI" />
 				<div className="overflow-y-auto h-full">{children}</div>
 			</SidebarInset>
 		</SidebarProvider>
