@@ -1,4 +1,3 @@
-// File: types/chat.ts
 export type MessageType = {
 	id: string
 	content: string
