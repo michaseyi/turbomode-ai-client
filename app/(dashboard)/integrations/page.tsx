@@ -2,7 +2,7 @@
 import { useState } from "react"
 import Image, { StaticImageData } from "next/image"
 import Link from "next/link"
-import { ChevronRight, PlusCircle, Search } from "lucide-react"
+import { Blocks, ChevronRight, PlusCircle, Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 // Import icons
@@ -57,7 +57,7 @@ function IntegrationCard({ integration }: { integration: Integration }) {
 			href={integration.path}
 			className="group flex items-center gap-4 rounded-xl border bg-card/50 p-4 transition-all hover:border-primary/20 hover:bg-card hover:shadow-sm"
 		>
-			<div className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary/5 p-2 transition-all group-hover:bg-primary/10">
+			<div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/5 p-2 transition-all group-hover:bg-primary/10">
 				<Image
 					src={integration.icon}
 					alt={integration.name}
@@ -138,24 +138,29 @@ function Integrations() {
 				))}
 			</div>
 
-			<div className="mt-8 flex items-center justify-center">
+			{/* <div className="mt-8 flex items-center justify-center">
 				<Button variant="outline" className="gap-2 text-muted-foreground">
 					<PlusCircle className="h-4 w-4" />
 					Request Integration
 				</Button>
-			</div>
+			</div> */}
 		</div>
 	)
 }
 
 export default function IntegrationsPage() {
 	return (
-		<div className="mx-auto max-w-4xl">
-			<div className="mb-10">
-				<h1 className="text-center text-3xl font-bold tracking-tight sm:text-4xl">Integrations</h1>
-				<p className="mx-auto mt-3 max-w-2xl text-center text-muted-foreground">
-					Connect your favorite tools to enhance your AI assistant's capabilities
-				</p>
+		<div>
+			<div className="mb-8 flex items-center gap-4">
+				<div className="flex shrink-0 h-12 w-12 items-center justify-center rounded-full bg-primary/10 p-2">
+					<Blocks />
+				</div>
+				<div>
+					<h1 className="text-2xl font-semibold">Integrations</h1>
+					<p className="text-sm text-muted-foreground line-clamp-2">
+						Connect your favorite tools to enhance your AI assistant's capabilities
+					</p>
+				</div>
 			</div>
 
 			<div className="rounded-xl border bg-card/40 p-4 sm:p-6 shadow-sm">

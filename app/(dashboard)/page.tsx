@@ -91,7 +91,7 @@ export default function ChatPage() {
 	}
 
 	return (
-		<div className="flex flex-col overflow-hidden  h-full">
+		<div className="flex flex-col overflow-hidden h-full">
 			{/* <ChatHeader
 				title={conversationTitle || "New Conversation"}
 				status={conversationTitle ? "active" : undefined}

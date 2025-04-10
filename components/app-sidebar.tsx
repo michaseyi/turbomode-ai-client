@@ -118,7 +118,7 @@ function TaskSidebarGroup() {
 					{tasks.map((item) => (
 						<SidebarMenuItem key={item.title}>
 							<SidebarMenuButton asChild>
-								<Link href={`/tasks/${item.url}`}>
+								<Link href={`/`}>
 									<span className="!text-clip relative fade-text">{item.title}</span>
 								</Link>
 							</SidebarMenuButton>
@@ -154,7 +154,7 @@ export function AppSidebar() {
 						<SidebarMenuButton asChild className="data-[slot=sidebar-menu-button]:!p-1.5">
 							<Link href="/">
 								<Image src={Logo} alt="d" className="h-5 w-5" width={100} />
-								<span className="text-base font-semibold">Turbomode AI</span>
+								<span className="text-base font-medium">Turbomode AI</span>
 							</Link>
 						</SidebarMenuButton>
 					</SidebarMenuItem>

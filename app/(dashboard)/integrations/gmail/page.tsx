@@ -286,32 +286,18 @@ function EmailProcessingOptions() {
 									</p>
 								</div>
 								<div
-									className="relative h-6 w-11 cursor-pointer rounded-full bg-primary px-1"
+									className="relative h-6 w-11 cursor-pointer rounded-full bg-muted px-1"
 									role="switch"
 								>
-									<div className="absolute left-6 top-1 h-4 w-4 rounded-full bg-white transition-all"></div>
+									<div className="absolute left-1 top-1 h-4 w-4 rounded-full bg-muted-foreground transition-all"></div>
 								</div>
-							</div>
-
-							<div className="flex items-center justify-between">
-								<div>
-									<p className="text-sm font-medium">Notification frequency</p>
-									<p className="text-xs text-muted-foreground">
-										How often to receive processing updates
-									</p>
-								</div>
-								<select className="rounded border bg-background px-2 py-1 text-xs">
-									<option value="immediate">Immediate</option>
-									<option value="hourly">Hourly summary</option>
-									<option value="daily">Daily digest</option>
-								</select>
 							</div>
 						</div>
 					</details>
 				</div>
 
 				<div className="flex justify-end">
-					<Button className="gap-2 bg-primary font-medium text-white hover:bg-primary/90">
+					<Button className="gap-2 bg-primary font-medium hover:bg-primary/90">
 						Save Processing Settings
 					</Button>
 				</div>
@@ -346,7 +332,7 @@ export default function GmailIntegrationPage() {
 	}
 
 	return (
-		<div className="max-w-3xl">
+		<div>
 			<div className="mb-8 flex items-center gap-4">
 				<div className="flex shrink-0 h-12 w-12 items-center justify-center rounded-full bg-primary/10 p-2">
 					<Image src={Gmail} alt="Gmail" width={24} height={24} />
