@@ -102,6 +102,7 @@ function IntegrationsFilters() {
 	return (
 		<div className="mb-6 flex md:items-center justify-between flex-col md:flex-row gap-2">
 			<div className="flex gap-2 overflow-hidden pb-1.5 md:pb-0">
+				{/* Todo: Fix overflow on mobile */}
 				{filters.map((filter) => (
 					<Button
 						key={filter.id}
