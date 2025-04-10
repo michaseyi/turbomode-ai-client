@@ -20,7 +20,7 @@ export default async function RootLayout({
 }>) {
 	return (
 		<html lang="en" suppressHydrationWarning>
-			<body className={`${ibmPlexSans.variable} antialiased`}>
+			<body className={`${ibmPlexSans.variable} antialiased h-dvh`}>
 				<ThemeProvider
 					attribute="class"
 					defaultTheme="system"

@@ -3,5 +3,9 @@ export default async function Layout({
 }: Readonly<{
 	children: React.ReactNode
 }>) {
-	return <div className="container mx-auto max-w-5xl p-6 lg:p-8">{children}</div>
+	return (
+		<div className="flex flex-col items-center container mx-auto max-w-5xl p-4 sm:p-6">
+			{children}
+		</div>
+	)
 }

@@ -12,8 +12,6 @@ import {
 	SidebarMenuItem,
 } from "@/components/ui/sidebar"
 
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
-
 import {
 	DropdownMenu,
 	DropdownMenuContent,

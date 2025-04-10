@@ -1,5 +1,6 @@
 import { AppSidebar } from "@/components/app-sidebar"
 import { SiteHeader } from "@/components/site-header"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { cookies } from "next/headers"
 
@@ -11,11 +12,11 @@ export default async function Layout({
 	const cookieStore = await cookies()
 	const defaultOpen = cookieStore.get("sidebar_state")?.value === "true"
 	return (
-		<SidebarProvider defaultOpen={defaultOpen}>
+		<SidebarProvider defaultOpen={defaultOpen} className="h-full">
 			<AppSidebar />
-			<SidebarInset>
+			<SidebarInset className="h-full">
 				<SiteHeader title="Turbomode AI" />
-				{children}
+				<div className="overflow-y-auto h-full">{children}</div>
 			</SidebarInset>
 		</SidebarProvider>
 	)
