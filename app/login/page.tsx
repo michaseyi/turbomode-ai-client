@@ -1,18 +1,31 @@
-import { GalleryVerticalEnd } from "lucide-react"
-import Logo from "@/assets/images/logo.png"
-
 import { LoginForm } from "@/components/login-form"
-import Image from "next/image"
+import LoginBanner from "@/assets/images/banner.png"
 
+import TurboModeAI from "@/assets/images/logo.png"
+import Image from "next/image"
 export default function LoginPage() {
 	return (
-		<div className="bg-sidebar flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
-			<div className="flex w-full max-w-sm flex-col gap-6">
-				<a href="#" className="flex items-center gap-2 self-center font-medium">
-					<Image src={Logo} className="w-5 h-5" width={100} alt="" />
-					Turbomode AI
-				</a>
-				<LoginForm />
+		<div className="grid min-h-svh lg:grid-cols-2">
+			<div className="flex flex-col gap-4 p-6 md:p-10">
+				<div className="flex justify-center gap-2 md:justify-start">
+					<a href="#" className="flex items-center gap-2 font-medium">
+						<Image src={TurboModeAI} alt="TurboMode AI" width={24} />
+						TurboMode AI
+					</a>
+				</div>
+				<div className="flex flex-1 items-center justify-center">
+					<div className="w-full max-w-xs">
+						<LoginForm />
+					</div>
+				</div>
+			</div>
+			<div className="relative hidden bg-muted lg:block">
+				<Image
+					src={LoginBanner}
+					width={2000}
+					alt="Image"
+					className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.3] dark:grayscale"
+				/>
 			</div>
 		</div>
 	)
