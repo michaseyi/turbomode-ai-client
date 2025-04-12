@@ -1,4 +1,3 @@
-// File: pages/ChatPage.tsx
 "use client"
 import { useState, useRef, useEffect } from "react"
 import ChatHeader from "@/components/chat/chat-header"

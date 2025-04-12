@@ -95,7 +95,7 @@ function IntegrationsFilters() {
 	const filters = [
 		{ id: "all", label: "All" },
 		{ id: "communication", label: "Communication" },
-		{ id: "productivity", label: "Productivity" },
+		// { id: "productivity", label: "Productivity" },
 		{ id: "meeting", label: "Meetings" },
 	]
 
