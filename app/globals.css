@@ -123,6 +123,7 @@
 
 /* Global scrollbar styles */
 * {
+	/* scrollbar-gutter: stable; */
 	scrollbar-width: thin; /* For Firefox */
 	scrollbar-color: var(--sidebar-accent) transparent; /* Thumb color and transparent track for Firefox */
 	font-family: var(--font-ibm-plex-sans);

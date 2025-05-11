@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation"
 import { useQuery } from "@tanstack/react-query"
 import { api } from "@/lib/api"
 import { AuthUser } from "@/types/api"
+import { clearAuthTokens } from "@/lib/utils"
 
 export const AuthUserContext = createContext<AuthUser>({} as AuthUser)
 
@@ -31,6 +32,7 @@ export function AuthUserProvider({ children }: AuthUserProviderProp) {
 
 	useEffect(() => {
 		if (!isLoading && !user) {
+			clearAuthTokens()
 			router.push(`/login?next=${pathname}`)
 		}
 

@@ -4,6 +4,19 @@ export type ApiDataResponse<T> = {
 	data: T
 }
 
+export type PaginatedApiDataResponse<T> = {
+	success: true
+	message: string
+	data: T
+	pagination: {
+		total: number
+		page: number
+		limit: number
+		pages: number
+		hasMore: boolean
+	}
+}
+
 export type LoginBody = {
 	email: string
 	password: string
@@ -41,7 +54,7 @@ export type AuthUser = {
 export type GmailIntegration = {
 	id: string
 	enabled: boolean
-	type: "GMAIL" | "ZOOM" | "SLACK"
+	type: "Gmail" | "Zoom" | "Slack" | "Gcalendar"
 	gmail: {
 		email: string
 		processAttachment: boolean
@@ -60,4 +73,12 @@ export type ModifyGmailIntegration = {
 	specificAddresses?: string
 	instruction?: string
 	emailProcessOption?: "All" | "ExceptSpecific" | "FromSpecific"
+}
+
+export type Action = {
+	id: string
+	title: string
+	active: boolean
+	createdAt: string
+	updateAt: string
 }

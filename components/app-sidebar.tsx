@@ -19,66 +19,34 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Blocks, MoreHorizontal, Plus } from "lucide-react"
+import { Blocks, Home, MoreHorizontal, Plus } from "lucide-react"
 import { NavUser } from "./nav-user"
 import Link from "next/link"
 
 import { userAuthUser as useAuthUser } from "@/hooks/user-auth-user"
-
-const tasks = [
-	{
-		title: "Complete project proposal for client",
-		url: "idadf",
-	},
-	{
-		title: "Review pull requests from team",
-		url: "#",
-	},
-	{
-		title: "Prepare presentation for quarterly meeting",
-		url: "#",
-	},
-	{
-		title: "Update documentation for API endpoints",
-		url: "#",
-	},
-
-	{
-		title: "Plan sprint tasks for next week",
-		url: "#",
-	},
-	{
-		title: "Write unit tests for new features",
-		url: "#",
-	},
-	{
-		title: "Optimize database queries for performance",
-		url: "#",
-	},
-	{
-		title: "Design wireframes for new dashboard",
-		url: "#",
-	},
-	{
-		title: "Conduct user interviews for feedback",
-		url: "#",
-	},
-	{
-		title: "Set up CI/CD pipeline for deployment",
-		url: "#",
-	},
-]
+import { useQuery } from "@tanstack/react-query"
+import { api } from "@/lib/api"
+import { useState } from "react"
+import { EmptyState } from "./empty-state"
+import { ErrorState } from "./error-state"
+import { LoadingState } from "./loading-state"
+import { useRouter } from "next/navigation"
 
 const navigations = [
 	{
-		title: "New Task",
+		title: "Dashboard",
 		url: "/",
-		icon: Plus,
+		icon: Home,
 	},
 	{
 		title: "Integrations",
 		url: "/integrations",
 		icon: Blocks,
+	},
+	{
+		title: "New Action",
+		url: "/actions",
+		icon: Plus,
 	},
 ]
 
@@ -104,36 +72,67 @@ function DefaultSidebarGroup() {
 }
 
 function TaskSidebarGroup() {
+	const [page, setPage] = useState(1)
+
+	const router = useRouter()
+
+	const { data, isLoading, isError, refetch } = useQuery({
+		queryKey: ["actions-list"],
+		queryFn: async () => {
+			return await api.actions.listActions(page)
+		},
+	})
+
 	return (
 		<SidebarGroup>
-			<SidebarGroupLabel>Tasks</SidebarGroupLabel>
+			<SidebarGroupLabel>Actions</SidebarGroupLabel>
 			<SidebarGroupContent>
-				<SidebarMenu>
-					{tasks.map((item) => (
-						<SidebarMenuItem key={item.title}>
-							<SidebarMenuButton asChild>
-								<Link href={`/`}>
-									<span className="!text-clip relative fade-text">{item.title}</span>
-								</Link>
-							</SidebarMenuButton>
-							<DropdownMenu>
-								<DropdownMenuTrigger asChild>
-									<SidebarMenuAction>
-										<MoreHorizontal />
-									</SidebarMenuAction>
-								</DropdownMenuTrigger>
-								<DropdownMenuContent side="right" align="start">
-									<DropdownMenuItem>
-										<span>Rename</span>
-									</DropdownMenuItem>
-									<DropdownMenuItem>
-										<span>Delete</span>
-									</DropdownMenuItem>
-								</DropdownMenuContent>
-							</DropdownMenu>
+				{isLoading ? (
+					<LoadingState message="Loading actions..." />
+				) : isError ? (
+					<ErrorState onRetry={refetch} />
+				) : !data ? (
+					<></>
+				) : data.data.length === 0 ? (
+					<SidebarMenu>
+						<SidebarMenuItem>
+							<EmptyState
+								description="No actions yet"
+								onAction={() => {
+									router.push("/actions")
+								}}
+								actionLabel="Create your first action"
+							/>
 						</SidebarMenuItem>
-					))}
-				</SidebarMenu>
+					</SidebarMenu>
+				) : (
+					<SidebarMenu>
+						{data.data.map((item) => (
+							<SidebarMenuItem key={item.id}>
+								<SidebarMenuButton asChild>
+									<Link href={`/actions/${item.id}`}>
+										<span className="!text-clip relative fade-text">{item.title}</span>
+									</Link>
+								</SidebarMenuButton>
+								<DropdownMenu>
+									<DropdownMenuTrigger asChild>
+										<SidebarMenuAction>
+											<MoreHorizontal />
+										</SidebarMenuAction>
+									</DropdownMenuTrigger>
+									<DropdownMenuContent side="right" align="start">
+										<DropdownMenuItem>
+											<span>Rename</span>
+										</DropdownMenuItem>
+										<DropdownMenuItem>
+											<span>Delete</span>
+										</DropdownMenuItem>
+									</DropdownMenuContent>
+								</DropdownMenu>
+							</SidebarMenuItem>
+						))}
+					</SidebarMenu>
+				)}
 			</SidebarGroupContent>
 		</SidebarGroup>
 	)

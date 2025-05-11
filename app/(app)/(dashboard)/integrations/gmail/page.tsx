@@ -20,17 +20,23 @@ export default function GmailIntegrationPage() {
 
 	const [activeIntegration, setActiveIntegration] = useState<string>()
 
-	const { data = [], isLoading } = useQuery({
+	const {
+		data = [],
+		isLoading,
+		isError,
+		refetch,
+	} = useQuery({
 		queryKey: ["gmail-integrations"],
+		refetchOnWindowFocus: true,
 		queryFn: async () => {
-			return (await api.integrations.getGmailIntegrations()).data
+			return (await api.integrations.listGmailIntegration()).data
 		},
 	})
 
 	const addAccountMutation = useMutation({
 		mutationKey: ["connect-gmail"],
 		mutationFn: async () => {
-			return await api.integrations.addgmailIntegration()
+			return await api.integrations.newGmailIntegration()
 		},
 		onError: (err) => {
 			toast(err.message)
@@ -44,7 +50,7 @@ export default function GmailIntegrationPage() {
 	const removeAccountMutation = useMutation({
 		mutationKey: ["remove-gmail"],
 		mutationFn: async (id: string) => {
-			return await api.integrations.removeGmailIntegration(id)
+			return await api.integrations.deleteGmailIntegration(id)
 		},
 		onError: (err) => {
 			toast(err.message)
@@ -88,8 +94,11 @@ export default function GmailIntegrationPage() {
 					setActiveIntegration={setActiveIntegration}
 					onAddAccount={handleAddAccount}
 					isLoading={isLoading}
+					isLoadingError={isError}
+					refetchAccounts={refetch}
 					isDisconnecting={removeAccountMutation.isPending}
 					onRemoveAccount={handleRemoveAccount}
+					isAdding={addAccountMutation.isPending}
 				/>
 
 				<EmailProcessingOptions activeIntegration={activeIntegration} integration={data} />

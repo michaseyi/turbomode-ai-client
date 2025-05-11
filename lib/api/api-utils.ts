@@ -68,8 +68,8 @@ export async function getOAuthCode() {
 
 		setTimeout(() => {
 			controller.abort()
-			rej("OAuth login timed out")
-		}, 900000)
+			rej("OAuth timed out")
+		}, 90000)
 	})
 }
 

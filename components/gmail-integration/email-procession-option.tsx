@@ -65,7 +65,7 @@ export function EmailProcessingOptions({
 	const updateAccountMutation = useMutation({
 		mutationKey: ["connect-gmail"],
 		mutationFn: async (data: { id: string; payload: ModifyGmailIntegration }) => {
-			return await api.integrations.modifyGmailIntegration(data.id, data.payload)
+			return await api.integrations.patchGmailIntegration(data.id, data.payload)
 		},
 		onError: (err) => {
 			toast(err.message)
