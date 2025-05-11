@@ -1,9 +1,21 @@
+"use client"
 import { LoginForm } from "@/components/login-form"
 import LoginBanner from "@/assets/images/banner.png"
 
 import TurboModeAI from "@/assets/images/logo.png"
 import Image from "next/image"
+import { useEffect } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 export default function LoginPage() {
+	const router = useRouter()
+	const params = useSearchParams()
+
+	useEffect(() => {
+		if (localStorage.getItem("accessToken")) {
+			router.push(params.get("next") || "/")
+		}
+	}, [router])
+
 	return (
 		<div className="grid min-h-svh lg:grid-cols-2">
 			<div className="flex flex-col gap-4 p-6 md:p-10">

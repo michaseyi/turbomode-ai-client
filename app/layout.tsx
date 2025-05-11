@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { IBM_Plex_Sans } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
+import { Toaster } from "@/components/ui/sonner"
 
 const ibmPlexSans = IBM_Plex_Sans({
 	variable: "--font-ibm-plex-sans",
@@ -27,7 +28,10 @@ export default async function RootLayout({
 					enableSystem
 					disableTransitionOnChange
 				>
-					{children}
+					<>
+						{children}
+						<Toaster />
+					</>
 				</ThemeProvider>
 			</body>
 		</html>

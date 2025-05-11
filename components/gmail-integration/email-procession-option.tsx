@@ -1,114 +1,34 @@
 "use client"
-import { useState } from "react"
-import Image from "next/image"
-import { Mail, Plus, X, Check, ExternalLink, Loader2 } from "lucide-react"
+import { FormEventHandler, useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
-import Gmail from "@/assets/images/gmail.png"
+import { GmailIntegration, ModifyGmailIntegration } from "@/types/api"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { api } from "@/lib/api"
+import { toast } from "sonner"
+import { Loader2 } from "lucide-react"
 
-type EmailAccount = {
-	id: number
-	provider: string
-	connectedAt: Date
-	email: string
+type EmailProcessingOptionsProps = {
+	integration: GmailIntegration[]
+	activeIntegration?: string
 }
 
-interface ConnectedAccountsProps {
-	accounts: EmailAccount[]
-	onAddAccount: () => void
-	onRemoveAccount: (id: number) => void
-	isLoading?: boolean
-}
+export function EmailProcessingOptions({
+	integration,
+	activeIntegration,
+}: EmailProcessingOptionsProps) {
+	const hide = !activeIntegration
+	const active = integration.find(({ id }) => activeIntegration === id)
+	const [processingMode, setProcessingMode] = useState(active?.gmail.emailProcessOption ?? "All")
+	const [customPrompt, setCustomPrompt] = useState(active?.gmail.instruction ?? "")
+	const [special, setSpecial] = useState(active?.gmail.specificAddresses ?? "")
 
-export function ConnectedAccounts({
-	accounts = [],
-	onAddAccount,
-	onRemoveAccount,
-	isLoading = false,
-}: ConnectedAccountsProps) {
-	const [isDisconnecting, setIsDisconnecting] = useState<number | null>(null)
+	useEffect(() => {
+		const active = integration.find(({ id }) => activeIntegration === id)
+		setProcessingMode(active?.gmail.emailProcessOption ?? "All")
+		setCustomPrompt(active?.gmail.instruction ?? "")
+		setSpecial(active?.gmail.specificAddresses ?? "")
+	}, [integration, activeIntegration])
 
-	const handleDisconnect = async (id: number) => {
-		setIsDisconnecting(id)
-		try {
-			// In a real app, this would be an API call to disconnect the account
-			await new Promise((resolve) => setTimeout(resolve, 1000))
-			onRemoveAccount(id)
-		} catch (error) {
-			console.error("Failed to disconnect account", error)
-		} finally {
-			setIsDisconnecting(null)
-		}
-	}
-
-	return (
-		<div className="rounded-xl border bg-card/60 p-5 shadow-sm">
-			<div className="mb-5 flex items-center justify-between">
-				<h3 className="font-medium">Connected Accounts</h3>
-				<Button onClick={onAddAccount} size="sm" variant="outline" className="h-8 gap-1.5">
-					<Plus className="h-3.5 w-3.5" />
-					Add Account
-				</Button>
-			</div>
-
-			{accounts.length === 0 && !isLoading ? (
-				<div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-8 text-center">
-					<Mail className="mb-2 h-10 w-10 text-muted-foreground/50" />
-					<p className="text-sm text-muted-foreground">No email accounts connected yet</p>
-					<Button onClick={onAddAccount} variant="secondary" size="sm" className="mt-4">
-						Connect your first account
-					</Button>
-				</div>
-			) : null}
-
-			{isLoading ? (
-				<div className="flex items-center justify-center py-6">
-					<Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
-					<span className="ml-2 text-sm text-muted-foreground">Loading accounts...</span>
-				</div>
-			) : (
-				<div className="space-y-3">
-					{accounts.map((account) => (
-						<div
-							key={account.id}
-							className="flex items-center justify-between rounded-lg border bg-background p-3 transition-colors"
-						>
-							<div className="flex items-center gap-3">
-								<div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10">
-									<Mail className="h-4 w-4 text-primary" />
-								</div>
-								<div>
-									<p className="font-medium">{account.email}</p>
-									<p className="text-xs text-muted-foreground">
-										Connected {new Date(account.connectedAt).toLocaleDateString()}
-									</p>
-								</div>
-							</div>
-							<Button
-								variant="ghost"
-								size="sm"
-								onClick={() => handleDisconnect(account.id)}
-								disabled={isDisconnecting === account.id}
-								className="h-8 px-2 text-sm text-muted-foreground hover:text-destructive"
-							>
-								{isDisconnecting === account.id ? (
-									<Loader2 className="h-4 w-4 animate-spin" />
-								) : (
-									<X className="h-4 w-4" />
-								)}
-							</Button>
-						</div>
-					))}
-				</div>
-			)}
-		</div>
-	)
-}
-
-function EmailProcessingOptions() {
-	const [processingMode, setProcessingMode] = useState("all")
-	const [customPrompt, setCustomPrompt] = useState("")
-
-	// Example preset prompts that users can select
 	const examplePrompts = [
 		{
 			id: "categorize",
@@ -140,9 +60,51 @@ function EmailProcessingOptions() {
 				"Identify emails that require my response or follow-up. Create reminders with appropriate deadlines based on the urgency and content of the email.",
 		},
 	]
+	const queryClient = useQueryClient()
+
+	const updateAccountMutation = useMutation({
+		mutationKey: ["connect-gmail"],
+		mutationFn: async (data: { id: string; payload: ModifyGmailIntegration }) => {
+			return await api.integrations.modifyGmailIntegration(data.id, data.payload)
+		},
+		onError: (err) => {
+			toast(err.message, {
+				action: {
+					label: "Undo",
+					onClick: () => 0,
+				},
+			})
+		},
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ["gmail-integrations"] })
+			toast("Email data source config updated", {
+				action: {
+					label: "Undo",
+					onClick: () => 0,
+				},
+			})
+		},
+	})
+
+	const onSubmit: FormEventHandler<HTMLFormElement> = (e) => {
+		e.preventDefault()
+
+		if (!activeIntegration) {
+			return
+		}
+
+		updateAccountMutation.mutate({
+			id: activeIntegration,
+			payload: {
+				emailProcessOption: processingMode,
+				instruction: customPrompt,
+				specificAddresses: special,
+			},
+		})
+	}
 
 	return (
-		<div className="rounded-xl border bg-card/60 p-5 shadow-sm">
+		<form onSubmit={onSubmit} className="rounded-xl border bg-card/60 p-5 shadow-sm relative">
 			<h3 className="mb-5 font-medium">Email Processing Options</h3>
 
 			<div className="space-y-6">
@@ -159,8 +121,8 @@ function EmailProcessingOptions() {
 								id="process-all"
 								name="processing-mode"
 								value="all"
-								checked={processingMode === "all"}
-								onChange={() => setProcessingMode("all")}
+								checked={processingMode === "All"}
+								onChange={() => setProcessingMode("All")}
 								className="h-4 w-4 text-primary"
 							/>
 							<label htmlFor="process-all" className="text-sm">
@@ -174,8 +136,8 @@ function EmailProcessingOptions() {
 								id="process-specific"
 								name="processing-mode"
 								value="specific"
-								checked={processingMode === "specific"}
-								onChange={() => setProcessingMode("specific")}
+								checked={processingMode === "FromSpecific"}
+								onChange={() => setProcessingMode("FromSpecific")}
 								className="h-4 w-4 text-primary"
 							/>
 							<label htmlFor="process-specific" className="text-sm">
@@ -189,8 +151,8 @@ function EmailProcessingOptions() {
 								id="ignore-specific"
 								name="processing-mode"
 								value="ignore"
-								checked={processingMode === "ignore"}
-								onChange={() => setProcessingMode("ignore")}
+								checked={processingMode === "ExceptSpecific"}
+								onChange={() => setProcessingMode("ExceptSpecific")}
 								className="h-4 w-4 text-primary"
 							/>
 							<label htmlFor="ignore-specific" className="text-sm">
@@ -199,15 +161,17 @@ function EmailProcessingOptions() {
 						</div>
 					</div>
 
-					{processingMode !== "all" && (
+					{processingMode !== "All" && (
 						<div className="mt-3">
 							<label htmlFor="email-patterns" className="mb-1 block text-xs text-muted-foreground">
-								{processingMode === "specific"
+								{processingMode === "FromSpecific"
 									? "Enter email addresses to process"
 									: "Enter email addresses to ignore"}
 							</label>
 							<input
 								type="text"
+								value={special}
+								onChange={(e) => setSpecial(e.target.value)}
 								id="email-patterns"
 								placeholder="example@domain.com, *@company.com, newsletter*"
 								className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
@@ -259,7 +223,7 @@ function EmailProcessingOptions() {
 				</div>
 
 				{/* Advanced settings */}
-				<div>
+				{/* <div>
 					<details className="rounded-lg border px-4 py-3">
 						<summary className="cursor-pointer text-sm font-medium">Advanced settings</summary>
 						<div className="mt-3 space-y-3 pt-2">
@@ -294,67 +258,25 @@ function EmailProcessingOptions() {
 							</div>
 						</div>
 					</details>
-				</div>
+				</div> */}
 
 				<div className="flex justify-end">
-					<Button className="gap-2 bg-primary font-medium hover:bg-primary/90">
-						Save Processing Settings
+					<Button
+						disabled={updateAccountMutation.isPending}
+						type="submit"
+						className="gap-2 bg-primary font-medium hover:bg-primary/90"
+					>
+						{updateAccountMutation.isPending ? (
+							<Loader2 className="!h-6 !w-6 animate-spin text-muted-foreground" />
+						) : (
+							<>Save Processing Settings</>
+						)}
 					</Button>
 				</div>
 			</div>
-		</div>
-	)
-}
-
-export default function GmailIntegrationPage() {
-	const [accounts, setAccounts] = useState<EmailAccount[]>([
-		{
-			id: 1,
-			email: "michaseyi@gmail.com",
-			provider: "Gmail",
-			connectedAt: new Date(),
-		},
-		{
-			id: 2,
-			email: "adewolem2@gmail.com",
-			provider: "Gmail",
-			connectedAt: new Date(),
-		},
-	])
-
-	const handleAddAccount = () => {
-		// Implementation for adding a new account
-		console.log("Add account clicked")
-	}
-
-	const handleRemoveAccount = (id: number) => {
-		setAccounts(accounts.filter((account) => account.id !== id))
-	}
-
-	return (
-		<div>
-			<div className="mb-8 flex items-center gap-4">
-				<div className="flex shrink-0 h-12 w-12 items-center justify-center rounded-full bg-primary/10 p-2">
-					<Image src={Gmail} alt="Gmail" width={24} height={24} />
-				</div>
-				<div>
-					<h1 className="text-2xl font-semibold">Gmail Integration</h1>
-					<p className="text-sm text-muted-foreground line-clamp-2">
-						Integrate your Gmail account to enable the AI assistant to read, organize, and extract
-						insights from your emails.
-					</p>
-				</div>
-			</div>
-
-			<div className="space-y-6">
-				<ConnectedAccounts
-					accounts={accounts}
-					onAddAccount={handleAddAccount}
-					onRemoveAccount={handleRemoveAccount}
-				/>
-
-				<EmailProcessingOptions />
-			</div>
-		</div>
+			{hide && (
+				<div className="absolute top-0 left-0 w-full h-full bg-background/70 rounded-xl"></div>
+			)}
+		</form>
 	)
 }

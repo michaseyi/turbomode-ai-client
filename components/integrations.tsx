@@ -138,13 +138,6 @@ export function Integrations() {
 					<IntegrationCard key={integration.id} integration={integration} />
 				))}
 			</div>
-
-			{/* <div className="mt-8 flex items-center justify-center">
-				<Button variant="outline" className="gap-2 text-muted-foreground">
-					<PlusCircle className="h-4 w-4" />
-					Request Integration
-				</Button>
-			</div> */}
 		</div>
 	)
 }

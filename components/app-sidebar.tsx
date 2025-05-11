@@ -1,3 +1,4 @@
+"use client"
 import {
 	Sidebar,
 	SidebarContent,
@@ -21,9 +22,8 @@ import {
 import { Blocks, MoreHorizontal, Plus } from "lucide-react"
 import { NavUser } from "./nav-user"
 import Link from "next/link"
-import Image from "next/image"
 
-import Logo from "@/assets/images/logo.png"
+import { userAuthUser as useAuthUser } from "@/hooks/user-auth-user"
 
 const tasks = [
 	{
@@ -81,12 +81,6 @@ const navigations = [
 		icon: Blocks,
 	},
 ]
-
-const user = {
-	avatar: "",
-	email: "michaseyi@gmail.com",
-	name: "Michael Adewole",
-}
 
 function DefaultSidebarGroup() {
 	return (
@@ -146,6 +140,7 @@ function TaskSidebarGroup() {
 }
 
 export function AppSidebar() {
+	const user = useAuthUser()
 	return (
 		<Sidebar collapsible="offcanvas">
 			<SidebarHeader className="h-12">
