@@ -16,8 +16,8 @@ export function EmailProcessingOptions({
 	integration,
 	activeIntegration,
 }: EmailProcessingOptionsProps) {
-	const hide = !activeIntegration
 	const active = integration.find(({ id }) => activeIntegration === id)
+	const hide = !active
 	const [processingMode, setProcessingMode] = useState(active?.gmail.emailProcessOption ?? "All")
 	const [customPrompt, setCustomPrompt] = useState(active?.gmail.instruction ?? "")
 	const [special, setSpecial] = useState(active?.gmail.specificAddresses ?? "")
@@ -68,21 +68,11 @@ export function EmailProcessingOptions({
 			return await api.integrations.modifyGmailIntegration(data.id, data.payload)
 		},
 		onError: (err) => {
-			toast(err.message, {
-				action: {
-					label: "Undo",
-					onClick: () => 0,
-				},
-			})
+			toast(err.message)
 		},
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["gmail-integrations"] })
-			toast("Email data source config updated", {
-				action: {
-					label: "Undo",
-					onClick: () => 0,
-				},
-			})
+			toast("Email data source config updated")
 		},
 	})
 
@@ -264,7 +254,7 @@ export function EmailProcessingOptions({
 					<Button
 						disabled={updateAccountMutation.isPending}
 						type="submit"
-						className="gap-2 bg-primary font-medium hover:bg-primary/90"
+						className="gap-2 bg-primary font-medium hover:bg-primary/90 w-48"
 					>
 						{updateAccountMutation.isPending ? (
 							<Loader2 className="!h-6 !w-6 animate-spin text-muted-foreground" />

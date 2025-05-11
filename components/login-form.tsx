@@ -21,20 +21,10 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
 			return await api.auth.login(payload)
 		},
 		onError: (err) => {
-			toast(err.message, {
-				action: {
-					label: "Undo",
-					onClick: () => 0,
-				},
-			})
+			toast(err.message)
 		},
 		onSuccess: (data) => {
-			toast(data.message, {
-				action: {
-					label: "Undo",
-					onClick: () => 0,
-				},
-			})
+			toast(data.message)
 			const next = params.get("next")
 			router.push(next || "/")
 		},
@@ -46,20 +36,10 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
 			return await api.auth.googleAuth()
 		},
 		onError: (err) => {
-			toast(err.message, {
-				action: {
-					label: "Undo",
-					onClick: () => 0,
-				},
-			})
+			toast(err.message)
 		},
 		onSuccess: (data) => {
-			toast(data.message, {
-				action: {
-					label: "Undo",
-					onClick: () => 0,
-				},
-			})
+			toast(data.message)
 			const next = params.get("next")
 			router.push(next || "/")
 		},

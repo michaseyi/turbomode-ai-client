@@ -18,6 +18,8 @@ type EmailAccount = {
 export default function GmailIntegrationPage() {
 	const queryClient = useQueryClient()
 
+	const [activeIntegration, setActiveIntegration] = useState<string>()
+
 	const { data = [], isLoading } = useQuery({
 		queryKey: ["gmail-integrations"],
 		queryFn: async () => {
@@ -31,21 +33,11 @@ export default function GmailIntegrationPage() {
 			return await api.integrations.addgmailIntegration()
 		},
 		onError: (err) => {
-			toast(err.message, {
-				action: {
-					label: "Undo",
-					onClick: () => 0,
-				},
-			})
+			toast(err.message)
 		},
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["gmail-integrations"] })
-			toast("New email data source connected", {
-				action: {
-					label: "Undo",
-					onClick: () => 0,
-				},
-			})
+			toast("New email data source connected")
 		},
 	})
 
@@ -55,21 +47,11 @@ export default function GmailIntegrationPage() {
 			return await api.integrations.removeGmailIntegration(id)
 		},
 		onError: (err) => {
-			toast(err.message, {
-				action: {
-					label: "Undo",
-					onClick: () => 0,
-				},
-			})
+			toast(err.message)
 		},
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["gmail-integrations"] })
-			toast("Email data source removed", {
-				action: {
-					label: "Undo",
-					onClick: () => 0,
-				},
-			})
+			toast("Email data source removed")
 		},
 	})
 
@@ -83,8 +65,6 @@ export default function GmailIntegrationPage() {
 		}
 		removeAccountMutation.mutate(id)
 	}
-
-	const [activeIntegration, setActiveIntegration] = useState<string>()
 
 	return (
 		<div>
