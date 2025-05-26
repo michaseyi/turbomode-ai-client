@@ -27,7 +27,6 @@ export function AuthUserProvider({ children }: AuthUserProviderProp) {
 			const res = await api.auth.me()
 			return res.data
 		},
-		retry: false,
 	})
 
 	useEffect(() => {

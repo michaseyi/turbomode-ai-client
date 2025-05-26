@@ -33,6 +33,7 @@ import {
 	Home,
 } from "lucide-react"
 import Image from "next/image"
+import { Layout } from "@/components/layout"
 
 // Sample data - replace with your actual data
 const activityData = [
@@ -98,8 +99,7 @@ export default function Dashboard() {
 	const [timeFrame, setTimeFrame] = useState("week")
 
 	return (
-		<div className="">
-			{/* Header with welcome and summary */}
+		<Layout>
 			<div className="flex flex-col md:flex-row md:items-center justify-between mb-8">
 				<div className="flex items-center gap-4">
 					<div className="flex shrink-0 h-12 w-12 items-center justify-center rounded-full bg-primary/10 p-2">
@@ -372,7 +372,7 @@ export default function Dashboard() {
 				</div>
 
 				{/* Right Column - Activity and Insights */}
-				<div className="space-y-6">
+				<div className="space-y-6 mb-8">
 					{/* Insight Card */}
 					<div className="bg-gradient-to-br from-primary to-ring rounded-xl p-5 shadow-md text-primary-foreground">
 						<div className="flex items-center gap-2 mb-3">
@@ -470,6 +470,6 @@ export default function Dashboard() {
 					</div>
 				</div>
 			</div>
-		</div>
+		</Layout>
 	)
 }

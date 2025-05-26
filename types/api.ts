@@ -54,7 +54,7 @@ export type AuthUser = {
 export type GmailIntegration = {
 	id: string
 	enabled: boolean
-	type: "Gmail" | "Zoom" | "Slack" | "Gcalendar"
+	type: "Gmail"
 	gmail: {
 		email: string
 		processAttachment: boolean
@@ -66,6 +66,8 @@ export type GmailIntegration = {
 	createdAt: string
 	updatedAt: string
 }
+
+export type Integrations = GmailIntegration | CalendarIntegration
 
 export type ModifyGmailIntegration = {
 	processAttachment?: boolean
@@ -81,4 +83,44 @@ export type Action = {
 	active: boolean
 	createdAt: string
 	updateAt: string
+}
+
+export interface CalendarIntegration {
+	id: string
+	enabled: boolean
+	type: "Gcalendar"
+	gCalendar: {
+		email: string
+	}
+	createdAt: string
+	updatedAt: string
+}
+
+export interface ModifyCalendarIntegration {
+	remindersEnabled?: boolean
+	fetchEventsEnabled?: boolean
+	reminderInstructions?: string
+	visibilityOption?: "All" | "OnlySpecific" | "ExcludeSpecific"
+	specificCalendars?: string
+}
+
+export interface UIMessage {
+	id: string
+	role: "assistant" | "user" | "tool" | "system"
+	content: string
+	timestamp: string
+	metadata: Record<string, any>
+}
+
+
+export type CalendarEvent = {
+	id: string
+	eventId: string
+	summary: string
+	startTime: string
+	endTime: string
+	status: string
+	htmlLink: string
+	description: string
+	location: string
 }

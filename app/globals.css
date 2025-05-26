@@ -35,6 +35,7 @@
 	--color-primary: var(--primary);
 	--color-popover-foreground: var(--popover-foreground);
 	--color-popover: var(--popover);
+	--color-message: var(--message);
 	--color-card-foreground: var(--card-foreground);
 	--color-card: var(--card);
 	--radius-sm: calc(var(--radius) - 4px);
@@ -69,6 +70,7 @@
 	--chart-4: oklch(0.828 0.189 84.429);
 	--chart-5: oklch(0.769 0.188 70.08);
 	--sidebar: oklch(0.985 0 0);
+	--message: oklch(0.97 0 0);
 	--sidebar-foreground: oklch(0.141 0.005 285.823);
 	--sidebar-primary: oklch(0.21 0.006 285.885);
 	--sidebar-primary-foreground: oklch(0.985 0 0);
@@ -103,6 +105,7 @@
 	--chart-4: oklch(0.627 0.265 303.9);
 	--chart-5: oklch(0.645 0.246 16.439);
 	--sidebar: oklch(0.21 0.006 285.885);
+	--message: oklch(0.21 0.006 285.885);
 	--sidebar-foreground: oklch(0.985 0 0);
 	--sidebar-primary: oklch(0.488 0.243 264.376);
 	--sidebar-primary-foreground: oklch(0.985 0 0);
@@ -112,12 +115,223 @@
 	--sidebar-ring: oklch(0.552 0.016 285.938);
 }
 
+.scrollbar-hidden {
+	-ms-overflow-style: none;
+	scrollbar-width: none;
+	overflow: auto;
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+	display: none;
+}
+
 @layer base {
 	* {
 		@apply border-border outline-ring/50;
 	}
 	body {
 		@apply bg-background text-foreground;
+	}
+	.prose {
+		@apply w-full max-w-full leading-7 text-foreground;
+
+		/* Headings */
+		h1 {
+			@apply text-3xl font-bold mt-8 mb-4 text-foreground;
+		}
+
+		h2 {
+			@apply text-2xl font-semibold mt-6 mb-3 text-foreground;
+		}
+
+		h3 {
+			@apply text-xl font-semibold mt-5 mb-2 text-foreground;
+		}
+
+		h4 {
+			@apply text-lg font-medium mt-4 mb-2 text-foreground;
+		}
+
+		h5 {
+			@apply text-base font-medium mt-3 mb-1 text-foreground;
+		}
+
+		h6 {
+			@apply text-sm font-medium mt-3 mb-1 text-foreground;
+		}
+
+		/* Paragraphs */
+		p {
+			@apply text-base my-3 text-foreground;
+		}
+
+		/* Lists */
+		ul,
+		ol {
+			@apply pl-10 my-4;
+		}
+
+		li {
+			@apply my-2 text-foreground;
+		}
+
+		ul {
+			@apply list-disc;
+		}
+
+		ol {
+			@apply list-decimal;
+		}
+
+		/* Code blocks */
+		code {
+			@apply bg-muted text-muted-foreground rounded !font-['Jetbrains_Mono'];
+		}
+
+		pre {
+			@apply bg-card text-card-foreground rounded-md overflow-x-auto my-4;
+		}
+
+		pre code {
+			@apply bg-transparent text-inherit;
+		}
+
+		/* Blockquotes */
+		blockquote {
+			@apply border-l-4 border-muted pl-4 italic text-muted-foreground my-4;
+		}
+
+		/* Images */
+		img {
+			@apply max-w-full rounded-lg my-4;
+		}
+
+		/* Links */
+		a {
+			@apply text-primary underline decoration-primary decoration-1 underline-offset-2 transition-colors;
+		}
+
+		a:hover {
+			@apply text-primary/80;
+		}
+
+		/* Horizontal rule */
+		hr {
+			@apply border-t border-border my-8;
+		}
+
+		/* Tables */
+		table {
+			@apply w-full text-left text-sm border-collapse my-4 rounded-t-md overflow-hidden;
+		}
+
+		thead {
+			@apply bg-muted;
+		}
+
+		th {
+			@apply px-4 py-4 font-semibold border-b border-border;
+		}
+
+		td {
+			@apply px-4 py-4 border-b border-border;
+		}
+
+		tr:nth-child(even) {
+			@apply bg-muted/50;
+		}
+
+		tr:hover {
+			@apply bg-muted;
+		}
+
+		/* Figure captions */
+		figcaption {
+			@apply text-sm text-muted-foreground text-center mt-2;
+		}
+
+		/* Mark (highlighted text) */
+		mark {
+			@apply bg-accent text-accent-foreground px-1 rounded;
+		}
+
+		/* Small text */
+		small {
+			@apply text-sm text-muted-foreground;
+		}
+
+		/* Definition lists */
+		dl {
+			@apply my-4;
+		}
+
+		dt {
+			@apply font-medium text-foreground;
+		}
+
+		dd {
+			@apply ml-4 my-2 text-muted-foreground;
+		}
+
+		/* Nested lists spacing */
+		ul ul,
+		ol ol,
+		ul ol,
+		ol ul {
+			@apply mt-1 mb-0;
+		}
+
+		/* Footnotes */
+		.footnote {
+			@apply text-xs align-super text-primary;
+		}
+
+		.footnotes {
+			@apply mt-8 pt-6 border-t border-border text-sm text-muted-foreground;
+		}
+
+		/* Utilities for special content */
+		.lead {
+			@apply text-xl text-muted-foreground;
+		}
+
+		.caption {
+			@apply text-sm text-muted-foreground italic;
+		}
+
+		/* Code syntax highlighting hints (for syntax highlighters) */
+		.syntax-keyword {
+			@apply text-primary;
+		}
+
+		.syntax-string {
+			@apply text-chart-2;
+		}
+
+		.syntax-comment {
+			@apply text-muted-foreground italic;
+		}
+
+		.syntax-function {
+			@apply text-chart-1;
+		}
+
+		.syntax-number {
+			@apply text-chart-3;
+		}
+
+		/* Special content blocks */
+		.info-box {
+			@apply bg-muted p-4 rounded-md border-l-4 border-primary my-4;
+		}
+
+		.warning-box {
+			@apply bg-muted p-4 rounded-md border-l-4 border-chart-3 my-4;
+		}
+
+		.error-box {
+			@apply bg-muted p-4 rounded-md border-l-4 border-destructive my-4;
+		}
 	}
 }
 

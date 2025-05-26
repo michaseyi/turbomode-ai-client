@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import Gmail from "@/assets/images/gmail.png"
 import Slack from "@/assets/images/slack.png"
 import Zoom from "@/assets/images/zoom.png"
+import GoogleCalendar from "@/assets/images/google-calendar.png"
 
 type Integration = {
 	id: string
@@ -18,6 +19,7 @@ type Integration = {
 	path: string
 	isPopular?: boolean
 	isNew?: boolean
+	isComing?: boolean
 	category: "communication" | "productivity" | "meeting" | "other"
 }
 
@@ -32,12 +34,22 @@ const integrations: Integration[] = [
 		category: "communication",
 	},
 	{
+		id: "google-calendar",
+		name: "Google Calendar",
+		description:
+			"Integrate your Google Calendar to enable the AI assistant to set reminders, schedule events, and access your calendar for planning assistance.",
+		icon: GoogleCalendar,
+		path: "/integrations/google-calendar",
+		isPopular: true,
+		category: "communication",
+	},
+	{
 		id: "slack",
 		name: "Slack",
 		description: "Analyze conversations, extract insights, and automate workflows",
 		icon: Slack,
 		path: "/integrations/slack",
-		isPopular: true,
+		isComing: true,
 		category: "communication",
 	},
 	{
@@ -46,7 +58,7 @@ const integrations: Integration[] = [
 		description: "Summarize meetings and extract key points from recordings",
 		icon: Zoom,
 		path: "/integrations/zoom",
-		isNew: true,
+		isComing: true,
 		category: "meeting",
 	},
 ]
@@ -54,7 +66,7 @@ const integrations: Integration[] = [
 function IntegrationCard({ integration }: { integration: Integration }) {
 	return (
 		<Link
-			href={integration.path}
+			href={integration.isComing ? "#" : integration.path}
 			className="group flex items-center gap-4 rounded-xl border bg-card/50 p-4 transition-all hover:border-primary/20 hover:bg-card hover:shadow-sm"
 		>
 			<div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/5 p-2 transition-all group-hover:bg-primary/10">
@@ -70,6 +82,11 @@ function IntegrationCard({ integration }: { integration: Integration }) {
 			<div className="flex-1">
 				<div className="flex items-center gap-2">
 					<h3 className="font-medium">{integration.name}</h3>
+					{integration.isComing && (
+						<span className="rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-800">
+							Coming Soon
+						</span>
+					)}
 					{integration.isNew && (
 						<span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700">
 							New

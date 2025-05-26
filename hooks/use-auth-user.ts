@@ -2,6 +2,6 @@
 import { AuthUserContext } from "@/components/auth-user-provider"
 import { useContext } from "react"
 
-export function userAuthUser() {
+export function useAuthUser() {
 	return useContext(AuthUserContext)
 }

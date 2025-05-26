@@ -5,8 +5,9 @@ export async function login(payload: LoginBody): Promise<ApiDataResponse<LoginRe
 	const response = await wrapper(() =>
 		request.post<ApiDataResponse<LoginResponse>>("/auth/login", payload)
 	)
-	const { accessToken, refreshToken } = response.data.data
 
+	const { accessToken, refreshToken } = response.data.data
+	console.log(accessToken, refreshToken)
 	localStorage.setItem("accessToken", accessToken)
 	localStorage.setItem("refreshToken", refreshToken)
 	return response.data

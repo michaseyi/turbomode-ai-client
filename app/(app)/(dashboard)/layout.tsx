@@ -17,11 +17,7 @@ export default async function Layout({
 				<AppSidebar />
 				<SidebarInset className="h-full">
 					<SiteHeader title="TurboMode AI" />
-					<div className="overflow-y-auto h-full">
-						<div className="h-full flex flex-col items-center container mx-auto max-w-7xl p-6 sm:p-8">
-							<div className="w-full h-full">{children}</div>
-						</div>
-					</div>
+					<div className="overflow-y-auto w-full h-full">{children}</div>
 				</SidebarInset>
 			</SidebarProvider>
 		</AuthUserProvider>

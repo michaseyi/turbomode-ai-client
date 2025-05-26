@@ -43,6 +43,7 @@ export default function GmailIntegrationPage() {
 		},
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["gmail-integrations"] })
+			queryClient.invalidateQueries({ queryKey: ["integration-list"] })
 			toast("New email data source connected")
 		},
 	})
@@ -57,6 +58,8 @@ export default function GmailIntegrationPage() {
 		},
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["gmail-integrations"] })
+			queryClient.invalidateQueries({ queryKey: ["integration-list"] })
+
 			toast("Email data source removed")
 		},
 	})
