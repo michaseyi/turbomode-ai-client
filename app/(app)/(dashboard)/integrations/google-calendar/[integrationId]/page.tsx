@@ -112,6 +112,7 @@ const CalendarPage = () => {
 
 	const goToToday = () => {
 		setCurrentDate(new Date())
+		setSelectedDate(new Date())
 	}
 
 	const getEventsForDate = (date: Date) => {
