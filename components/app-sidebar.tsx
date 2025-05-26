@@ -19,7 +19,7 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Blocks, Home, Loader2, MoreHorizontal, Plus } from "lucide-react"
+import { Blocks, Home, Loader2, MoreHorizontal, NotebookIcon, Plus } from "lucide-react"
 import { NavUser } from "./nav-user"
 import Link from "next/link"
 
@@ -42,6 +42,11 @@ const navigations = [
 		title: "Integrations",
 		url: "/integrations",
 		icon: Blocks,
+	},
+	{
+		title: "Notes",
+		url: "/notes",
+		icon: NotebookIcon,
 	},
 	{
 		title: "New Action",

@@ -30,10 +30,10 @@ export function ChatInput({ onSubmit, disabled }: ChatInputProp) {
 						required={true}
 						rows={1}
 						placeholder={"Ask anything"}
-						className="resize-none flex-grow px-4 py-2.5 rounded-4xl focus:ring-0 outline-none w-full"
+						className="resize-none flex-grow px-4.5 py-3 rounded-4xl focus:ring-0 outline-none w-full"
 					/>
 				</div>
-				<div className="flex justify-between w-full p-2">
+				<div className="flex justify-between w-full p-2 pt-0">
 					<div>
 						<button
 							type="button"

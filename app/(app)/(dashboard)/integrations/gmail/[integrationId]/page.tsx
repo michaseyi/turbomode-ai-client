@@ -267,7 +267,6 @@ const EmailListPage: React.FC = () => {
 				hour12: true,
 			})
 		} else if (diffInHours < 168) {
-			// Less than a week
 			return date.toLocaleDateString("en-US", { weekday: "short" })
 		} else {
 			return date.toLocaleDateString("en-US", {
