@@ -98,6 +98,7 @@ const CalendarPage = () => {
 	})
 
 	const [selectedDate, setSelectedDate] = useState<Date | null>(null)
+
 	const [view, setView] = useState("month") // 'month', 'week', 'day'
 
 	const calendarDays = buildCalendar(currentDate, today)

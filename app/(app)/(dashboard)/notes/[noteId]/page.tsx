@@ -1,160 +1,255 @@
 "use client"
-import { useState, useEffect } from "react"
-import { ArrowLeftIcon, SaveIcon, TrashIcon } from "lucide-react"
-import { Note } from "../page"
 
 import "@blocknote/core/fonts/inter.css"
-import { BlockNoteView, lightDefaultTheme, Theme } from "@blocknote/mantine"
+import { BlockNoteView } from "@blocknote/mantine"
 import "@blocknote/mantine/style.css"
 import { useCreateBlockNote } from "@blocknote/react"
+import React, { useCallback, useEffect, useRef, useState } from "react"
 
 import "./styles.css"
+import { useParams } from "next/navigation"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { api } from "@/lib/api"
+import { toast } from "sonner"
+import { UpdateNoteProps } from "@/types/api"
+import { LoadingState } from "@/components/loading-state"
+import { ErrorState } from "@/components/error-state"
+import { Button } from "@/components/ui/button"
+import { CheckCircle2, Cloud, CloudOff, Loader2, WifiOff } from "lucide-react"
+
+type SaveStatus = "saved" | "saving" | "pending" | "error" | "offline"
 
 export default function NoteItemPage() {
-	const editor = useCreateBlockNote({
-		initialContent: [
-			{
-				type: "heading",
-				content: "Welcome to this demo!",
-			},
-			{
-				type: "paragraph",
-				content: "Open up a menu or toolbar to see more of the red theme",
-			},
-			{
-				type: "paragraph",
-				content: "Toggle light/dark mode in the page footer and see the theme change too",
-			},
-			{
-				type: "paragraph",
-			},
-		],
+	const { noteId } = useParams<{ noteId: string }>()
+	const queryClient = useQueryClient()
+
+	const { data, isLoading, isError, refetch } = useQuery({
+		queryKey: ["notes", noteId],
+		queryFn: async () => {
+			return await api.notes.fetchNote(noteId)
+		},
 	})
-	return (
-		<div className="h-full note-editor">
-			<BlockNoteView editor={editor} data-theming-css-variables-demo />
-		</div>
-	)
-}
 
-interface NoteEditPageProps {
-	note?: Note
-	onBack: () => void
-	onSave: (note: Note) => void
-	onDelete?: (noteId: string) => void
-}
+	const [saveStatus, setSaveStatus] = useState<SaveStatus>("saved")
+	const [lastSaved, setLastSaved] = useState<Date>()
+	const [title, setTitle] = useState("")
+	const [isInitialized, setIsInitialized] = useState(false)
 
-export function NoteEditPage({ note, onBack, onSave, onDelete }: NoteEditPageProps) {
-	const [title, setTitle] = useState(note?.title || "")
-	const [content, setContent] = useState(note?.content || "")
-	const [saving, setSaving] = useState(false)
-	const [hasChanges, setHasChanges] = useState(false)
+	const autoSaveTimeoutRef = useRef<NodeJS.Timeout>(null)
+	const pendingChangesRef = useRef(false)
+	const isOnlineRef = useRef(navigator.onLine)
 
-	useEffect(() => {
-		const hasModifications = title !== (note?.title || "") || content !== (note?.content || "")
-		setHasChanges(hasModifications)
-	}, [title, content, note])
+	const editor = useCreateBlockNote()
 
-	const handleSave = () => {
-		if (!title.trim()) {
-			alert("Please enter a title for your note")
+	const updateNoteMutation = useMutation({
+		mutationKey: ["update-note", noteId],
+		mutationFn: async (update: UpdateNoteProps) => {
+			return await api.notes.updateNote(noteId, update)
+		},
+		onMutate: () => {
+			setSaveStatus("saving")
+		},
+
+		onError: (err) => {
+			setSaveStatus("error")
+			toast.error("Failed to save note", {
+				description: err.message,
+				action: {
+					label: "Retry",
+					onClick: () => performAutoSave(),
+				},
+			})
+		},
+		onSuccess: () => {
+			// queryClient.invalidateQueries({ queryKey: ["notes", noteId] })
+			setSaveStatus("saved")
+			setLastSaved(new Date())
+			pendingChangesRef.current = false
+		},
+	})
+
+	const performAutoSave = useCallback(() => {
+		if (!isInitialized || !pendingChangesRef.current || !isOnlineRef.current) {
 			return
 		}
 
-		setSaving(true)
+		updateNoteMutation.mutate({
+			title,
+			content: editor.document,
+		})
+	}, [title, editor.document, isInitialized, updateNoteMutation])
 
-		// Mock save with setTimeout to simulate API call
-		setTimeout(() => {
-			const noteData = {
-				id: note?.id || crypto.randomUUID(),
-				title: title.trim(),
-				content: content.trim(),
-				createdAt: note?.createdAt || new Date().toISOString(),
-				updatedAt: new Date().toISOString(),
+	const scheduleAutoSave = useCallback(() => {
+		if (!isInitialized) return
+
+		if (autoSaveTimeoutRef.current) {
+			clearTimeout(autoSaveTimeoutRef.current)
+		}
+
+		setSaveStatus("pending")
+		pendingChangesRef.current = true
+
+		autoSaveTimeoutRef.current = setTimeout(() => {
+			performAutoSave()
+		}, 500)
+	}, [isInitialized, performAutoSave])
+
+	useEffect(() => {
+		if (data && !isInitialized) {
+			const note = data.data
+			setTitle(note.title)
+			const defaultDocument = editor.document[0]
+			editor.insertBlocks(note.content, defaultDocument, "before")
+			editor.removeBlocks([defaultDocument])
+
+			setIsInitialized(true)
+			setLastSaved(new Date(note.updatedAt || note.createdAt))
+			console.log(note.content)
+		}
+	}, [data?.data.id])
+
+	useEffect(() => {
+		if (!isInitialized) return
+
+		const cleanup = editor.onChange(() => {
+			scheduleAutoSave()
+		})
+
+		return cleanup
+	}, [editor, isInitialized, scheduleAutoSave])
+
+	function handleTitleChange(e: React.ChangeEvent<HTMLInputElement>) {
+		setTitle(e.target.value)
+		scheduleAutoSave()
+	}
+
+	function handleUpdate() {
+		if (autoSaveTimeoutRef.current) {
+			clearTimeout(autoSaveTimeoutRef.current)
+		}
+		updateNoteMutation.mutate({
+			title,
+			content: editor.document,
+		})
+	}
+
+	// online/offline detection
+	useEffect(() => {
+		const handleOnline = () => {
+			isOnlineRef.current = true
+			if (pendingChangesRef.current) {
+				setSaveStatus("pending")
+				performAutoSave()
+			} else {
+				setSaveStatus("saved")
 			}
+		}
 
-			onSave(noteData)
-			setHasChanges(false)
-			setSaving(false)
-		}, 800) // Simulate network delay
+		const handleOffline = () => {
+			isOnlineRef.current = false
+			setSaveStatus("offline")
+		}
+
+		window.addEventListener("online", handleOnline)
+		window.addEventListener("offline", handleOffline)
+
+		return () => {
+			window.removeEventListener("online", handleOnline)
+			window.removeEventListener("offline", handleOffline)
+		}
+	}, [performAutoSave])
+
+	useEffect(() => {
+		return () => {
+			if (autoSaveTimeoutRef.current) {
+				clearTimeout(autoSaveTimeoutRef.current)
+			}
+		}
+	}, [])
+
+	useEffect(() => {
+		const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+			if (pendingChangesRef.current) {
+				e.preventDefault()
+				return "You have unsaved changes. Are you sure you want to leave?"
+			}
+		}
+
+		window.addEventListener("beforeunload", handleBeforeUnload)
+		return () => window.removeEventListener("beforeunload", handleBeforeUnload)
+	}, [])
+
+	const SaveStatusIndicator = () => {
+		const getStatusConfig = () => {
+			switch (saveStatus) {
+				case "saved":
+					return {
+						icon: CheckCircle2,
+						text: "Saved",
+						className: "text-green-600",
+					}
+				case "saving":
+					return {
+						icon: Loader2,
+						text: "Saving...",
+						className: "text-blue-600",
+						animate: true,
+					}
+				case "pending":
+					return {
+						icon: Cloud,
+						text: "Unsaved",
+						className: "text-amber-600",
+					}
+				case "error":
+					return {
+						icon: CloudOff,
+						text: "Error",
+						className: "text-red-600",
+					}
+				case "offline":
+					return {
+						icon: WifiOff,
+						text: "Offline",
+						className: "text-gray-600",
+					}
+			}
+		}
+
+		const config = getStatusConfig()
+		const Icon = config.icon
+
+		return (
+			<div className="flex items-center gap-2 text-sm">
+				<Icon className={`w-4 h-4 ${config.className} ${config.animate ? "animate-spin" : ""}`} />
+				<span className={config.className}>{config.text}</span>
+			</div>
+		)
 	}
 
-	const handleDelete = () => {
-		if (!note || !onDelete) return
-
-		const confirmed = confirm("Are you sure you want to delete this note?")
-		if (!confirmed) return
-
-		// Mock delete - just call the callback
-		onDelete(note.id)
-	}
-
-	return (
-		<div className="min-h-screen bg-background flex flex-col">
-			{/* Header */}
-			<div className="border-b border-border bg-card px-6 py-4 flex-shrink-0">
-				<div className="max-w-4xl mx-auto flex items-center justify-between">
-					<div className="flex items-center gap-4">
-						<button
-							onClick={onBack}
-							className="text-muted-foreground hover:text-foreground p-2 rounded-lg hover:bg-accent transition-colors"
-						>
-							<ArrowLeftIcon className="w-5 h-5" />
-						</button>
-						<h1 className="text-xl font-semibold text-foreground">
-							{note ? "Edit Note" : "New Note"}
-						</h1>
-					</div>
-
-					<div className="flex items-center gap-2">
-						{note && onDelete && (
-							<button
-								onClick={handleDelete}
-								className="text-muted-foreground hover:text-destructive p-2 rounded-lg hover:bg-accent transition-colors"
-							>
-								<TrashIcon className="w-5 h-5" />
-							</button>
-						)}
-						<button
-							onClick={handleSave}
-							disabled={saving || !hasChanges}
-							className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-						>
-							<SaveIcon className="w-4 h-4" />
-							{saving ? "Saving..." : "Save"}
-						</button>
-					</div>
+	return isLoading ? (
+		<LoadingState />
+	) : isError ? (
+		<ErrorState
+			onRetry={() => {
+				refetch()
+			}}
+		/>
+	) : (
+		<div className="h-full note-editor bg-background text-foreground">
+			<div className="mb-6 flex flex-col space-y-2">
+				<div className="flex items-center gap-3">
+					<SaveStatusIndicator />
 				</div>
+				<input
+					type="text"
+					className="flex-1 w-full bg-card border border-border rounded-lg px-2 md:px-4 py-2 md:py-3 text-xl md:text-3xl font-semibold text-primary focus:outline-none focus:ring-2 focus:ring-muted transition"
+					value={title}
+					onChange={handleTitleChange}
+					placeholder="Title..."
+				/>
 			</div>
-
-			{/* Editor */}
-			<div className="flex-1 max-w-4xl mx-auto w-full px-6 py-8">
-				<div className="space-y-6">
-					{/* Title Input */}
-					<input
-						type="text"
-						value={title}
-						onChange={(e) => setTitle(e.target.value)}
-						placeholder="Note title..."
-						className="w-full text-2xl font-bold bg-transparent border-none outline-none text-foreground placeholder:text-muted-foreground resize-none"
-					/>
-
-					{/* Content Textarea */}
-					<textarea
-						value={content}
-						onChange={(e) => setContent(e.target.value)}
-						placeholder="Start writing your note..."
-						className="w-full min-h-[calc(100vh-300px)] bg-transparent border-none outline-none text-foreground placeholder:text-muted-foreground resize-none leading-relaxed"
-					/>
-				</div>
-			</div>
-
-			{/* Save indicator */}
-			{hasChanges && (
-				<div className="fixed bottom-6 right-6 bg-secondary text-secondary-foreground px-3 py-2 rounded-lg text-sm">
-					Unsaved changes
-				</div>
-			)}
+			<BlockNoteView editor={editor} data-theming-css-variables-demo />
 		</div>
 	)
 }

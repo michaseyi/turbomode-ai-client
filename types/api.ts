@@ -112,7 +112,6 @@ export interface UIMessage {
 	metadata: Record<string, any>
 }
 
-
 export type CalendarEvent = {
 	id: string
 	eventId: string
@@ -124,3 +123,23 @@ export type CalendarEvent = {
 	description: string
 	location: string
 }
+
+export type DetailedNote = {
+	id: string
+	title: string
+	content: any
+	snippet?: string
+	archived: boolean
+	pinned: boolean
+	favorite: boolean
+	createdAt: string
+	updatedAt: string
+}
+
+export type NoteQuery = Partial<Pick<DetailedNote, "archived" | "favorite" | "pinned">>
+
+export type Note = Omit<DetailedNote, "content">
+
+export type UpdateNoteProps = Partial<
+	Pick<DetailedNote, "archived" | "content" | "favorite" | "pinned" | "title">
+>
