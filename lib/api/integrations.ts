@@ -103,7 +103,7 @@ export async function fetchGoogleCalendarEventsByMonth(integrationId: string, mo
 
 export async function syncGoogleCalendarEvents(integrationId: string, month: Date) {
 	await wrapper(() =>
-		request.post(`/integrations/google-calendar/${integrationId}/sync`, {
+		request.post(`/integrations/google-calendar/${integrationId}/events/sync`, {
 			date: month.toISOString(),
 		})
 	)

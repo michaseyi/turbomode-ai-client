@@ -287,283 +287,277 @@ const EmailListPage: React.FC = () => {
 
 	return (
 		<div className="bg-background text-foreground">
-			<div className="p-4">
-				{/* Header */}
-				<div className="flex items-center justify-between mb-6">
-					<div className="flex items-center space-x-4">
-						<Mail className="w-8 h-8 text-primary" />
-						<h1 className="text-3xl font-bold text-primary">Inbox</h1>
-						<span className="text-sm text-muted-foreground bg-muted px-2 py-1 rounded">
-							{totalCount} messages
-						</span>
-					</div>
-
-					<div className="flex items-center space-x-2">
-						<button
-							onClick={() => setShowFilters(!showFilters)}
-							className={`p-2 rounded-lg transition-colors ${
-								showFilters ? "bg-primary text-primary-foreground" : "hover:bg-muted"
-							}`}
-						>
-							<Filter className="w-5 h-5" />
-						</button>
-					</div>
+			{/* Header */}
+			<div className="flex items-center justify-between mb-6">
+				<div className="flex items-center space-x-4">
+					<Mail className="w-8 h-8 text-primary" />
+					<h1 className="text-3xl font-bold text-primary">Inbox</h1>
+					<span className="text-sm text-muted-foreground bg-muted px-2 py-1 rounded">
+						{totalCount} messages
+					</span>
 				</div>
 
-				{/* Search and Filters */}
-				<div className="mb-6 space-y-4">
-					<div className="relative">
-						<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
-						<input
-							type="text"
-							placeholder="Search emails..."
-							className="w-full pl-10 pr-4 py-3 bg-card border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
-							value={filters.search}
-							onChange={(e) => handleSearch(e.target.value)}
-						/>
-					</div>
+				<div className="flex items-center space-x-2">
+					<button
+						onClick={() => setShowFilters(!showFilters)}
+						className={`p-2 rounded-lg transition-colors ${
+							showFilters ? "bg-primary text-primary-foreground" : "hover:bg-muted"
+						}`}
+					>
+						<Filter className="w-5 h-5" />
+					</button>
+				</div>
+			</div>
 
-					{showFilters && (
-						<div className="bg-card border border-border rounded-lg p-4">
-							<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-								<select
-									className="bg-background border border-border rounded-lg px-3 py-2"
-									value={filters.isRead === undefined ? "" : filters.isRead.toString()}
-									onChange={(e) =>
-										handleFilterChange({
-											isRead: e.target.value === "" ? undefined : e.target.value === "true",
-										})
-									}
-								>
-									<option value="">All Messages</option>
-									<option value="false">Unread</option>
-									<option value="true">Read</option>
-								</select>
-
-								<select
-									className="bg-background border border-border rounded-lg px-3 py-2"
-									value={filters.isStarred === undefined ? "" : filters.isStarred.toString()}
-									onChange={(e) =>
-										handleFilterChange({
-											isStarred: e.target.value === "" ? undefined : e.target.value === "true",
-										})
-									}
-								>
-									<option value="">All Stars</option>
-									<option value="true">Starred</option>
-									<option value="false">Not Starred</option>
-								</select>
-
-								<select
-									className="bg-background border border-border rounded-lg px-3 py-2"
-									value={filters.label || ""}
-									onChange={(e) =>
-										handleFilterChange({
-											label: e.target.value || undefined,
-										})
-									}
-								>
-									<option value="">All Labels</option>
-									<option value="Important">Important</option>
-									<option value="Work">Work</option>
-									<option value="Meetings">Meetings</option>
-									<option value="Reports">Reports</option>
-									<option value="Marketing">Marketing</option>
-									<option value="Social">Social</option>
-								</select>
-							</div>
-						</div>
-					)}
+			{/* Search and Filters */}
+			<div className="mb-6 space-y-4">
+				<div className="relative">
+					<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
+					<input
+						type="text"
+						placeholder="Search emails..."
+						className="w-full pl-10 pr-4 py-3 bg-card border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+						value={filters.search}
+						onChange={(e) => handleSearch(e.target.value)}
+					/>
 				</div>
 
-				{/* Email List */}
-				<div className="bg-card border border-border rounded-lg overflow-hidden">
-					{/* Bulk Actions Header */}
-					{selectedEmails.size > 0 && (
-						<div className="bg-muted/50 border-b border-border p-4 flex items-center justify-between">
-							<div className="flex items-center space-x-4">
-								<span className="text-sm text-muted-foreground">
-									{selectedEmails.size} selected
-								</span>
-								<div className="flex items-center space-x-2">
-									<button className="p-2 hover:bg-muted rounded-lg transition-colors">
-										<Archive className="w-4 h-4" />
-									</button>
-									<button className="p-2 hover:bg-muted rounded-lg transition-colors">
-										<Trash2 className="w-4 h-4" />
-									</button>
-									<button className="p-2 hover:bg-muted rounded-lg transition-colors">
-										<Star className="w-4 h-4" />
-									</button>
-								</div>
-							</div>
-							<button
-								onClick={() => setSelectedEmails(new Set())}
-								className="text-sm text-muted-foreground hover:text-foreground"
+				{showFilters && (
+					<div className="bg-card border border-border rounded-lg p-4">
+						<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+							<select
+								className="bg-background border border-border rounded-lg px-3 py-2"
+								value={filters.isRead === undefined ? "" : filters.isRead.toString()}
+								onChange={(e) =>
+									handleFilterChange({
+										isRead: e.target.value === "" ? undefined : e.target.value === "true",
+									})
+								}
 							>
-								Clear selection
-							</button>
-						</div>
-					)}
+								<option value="">All Messages</option>
+								<option value="false">Unread</option>
+								<option value="true">Read</option>
+							</select>
 
-					{/* List Header */}
-					<div className="border-b border-border p-4 flex items-center space-x-4">
-						<button onClick={handleSelectAll} className="p-1">
-							{selectedEmails.size === emails.length && emails.length > 0 ? (
-								<CheckCircle2 className="w-5 h-5 text-primary" />
-							) : (
-								<Circle className="w-5 h-5 text-muted-foreground" />
-							)}
-						</button>
-						<div className="flex-1 text-sm font-medium text-muted-foreground">Email</div>
-						<div className="w-24 text-sm font-medium text-muted-foreground text-right">Date</div>
-					</div>
-
-					{/* Email Items */}
-					<div className="divide-y divide-border">
-						{loading ? (
-							<div className="py-12">
-								<LoadingState />
-							</div>
-						) : emails.length === 0 ? (
-							<div className="text-center py-12">
-								<Mail className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-								<p className="text-muted-foreground">No emails found</p>
-							</div>
-						) : (
-							emails.map((email) => (
-								<div
-									key={email.id}
-									onClick={() => handleEmailClick(email.id)}
-									className={`p-4 hover:bg-muted/30 cursor-pointer transition-colors ${
-										!email.isRead ? "bg-muted/10" : ""
-									}`}
-								>
-									<div className="flex items-start space-x-4">
-										<button
-											onClick={(e) => {
-												e.stopPropagation()
-												handleEmailSelect(email.id)
-											}}
-											className="mt-1"
-										>
-											{selectedEmails.has(email.id) ? (
-												<CheckCircle2 className="w-5 h-5 text-primary" />
-											) : (
-												<Circle className="w-5 h-5 text-muted-foreground" />
-											)}
-										</button>
-
-										<button onClick={(e) => handleStarToggle(email.id, e)} className="mt-1">
-											<Star
-												className={`w-5 h-5 ${
-													email.isStarred ? "text-yellow-500 fill-current" : "text-muted-foreground"
-												}`}
-											/>
-										</button>
-
-										<div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center flex-shrink-0">
-											<span className="text-sm font-medium text-primary">
-												{getInitials(email.from.name)}
-											</span>
-										</div>
-
-										<div className="flex-1 min-w-0">
-											<div className="flex items-center justify-between mb-1">
-												<div className="flex items-center space-x-2">
-													<span
-														className={`font-medium ${
-															!email.isRead ? "text-foreground" : "text-muted-foreground"
-														}`}
-													>
-														{email.from.name}
-													</span>
-													{email.hasAttachments && (
-														<Paperclip className="w-4 h-4 text-muted-foreground" />
-													)}
-												</div>
-												<span className="text-sm text-muted-foreground">
-													{formatDate(email.date)}
-												</span>
-											</div>
-
-											<div
-												className={`font-medium mb-1 ${
-													!email.isRead ? "text-foreground" : "text-muted-foreground"
-												}`}
-											>
-												{email.subject}
-											</div>
-
-											<p className="text-sm text-muted-foreground line-clamp-2">{email.snippet}</p>
-
-											{email.labels.length > 0 && (
-												<div className="flex items-center space-x-2 mt-2">
-													{email.labels.map((label) => (
-														<span
-															key={label}
-															className="px-2 py-1 text-xs bg-chart-1 text-white rounded-full"
-														>
-															{label}
-														</span>
-													))}
-												</div>
-											)}
-										</div>
-									</div>
-								</div>
-							))
-						)}
-					</div>
-				</div>
-
-				{/* Pagination */}
-				{totalPages > 1 && (
-					<div className="flex items-center justify-between mt-6">
-						<div className="text-sm text-muted-foreground">
-							Showing {Math.min((currentPage - 1) * itemsPerPage + 1, totalCount)} to{" "}
-							{Math.min(currentPage * itemsPerPage, totalCount)} of {totalCount} emails
-						</div>
-
-						<div className="flex items-center space-x-2">
-							<button
-								onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
-								disabled={currentPage === 1}
-								className="p-2 rounded-lg border border-border hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed"
+							<select
+								className="bg-background border border-border rounded-lg px-3 py-2"
+								value={filters.isStarred === undefined ? "" : filters.isStarred.toString()}
+								onChange={(e) =>
+									handleFilterChange({
+										isStarred: e.target.value === "" ? undefined : e.target.value === "true",
+									})
+								}
 							>
-								<ChevronLeft className="w-5 h-5" />
-							</button>
+								<option value="">All Stars</option>
+								<option value="true">Starred</option>
+								<option value="false">Not Starred</option>
+							</select>
 
-							<div className="flex items-center space-x-1">
-								{Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-									const page = i + 1
-									return (
-										<button
-											key={page}
-											onClick={() => setCurrentPage(page)}
-											className={`px-3 py-2 rounded-lg text-sm ${
-												currentPage === page
-													? "bg-primary text-primary-foreground"
-													: "hover:bg-muted"
-											}`}
-										>
-											{page}
-										</button>
-									)
-								})}
-							</div>
-
-							<button
-								onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
-								disabled={currentPage === totalPages}
-								className="p-2 rounded-lg border border-border hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed"
+							<select
+								className="bg-background border border-border rounded-lg px-3 py-2"
+								value={filters.label || ""}
+								onChange={(e) =>
+									handleFilterChange({
+										label: e.target.value || undefined,
+									})
+								}
 							>
-								<ChevronRight className="w-5 h-5" />
-							</button>
+								<option value="">All Labels</option>
+								<option value="Important">Important</option>
+								<option value="Work">Work</option>
+								<option value="Meetings">Meetings</option>
+								<option value="Reports">Reports</option>
+								<option value="Marketing">Marketing</option>
+								<option value="Social">Social</option>
+							</select>
 						</div>
 					</div>
 				)}
 			</div>
+
+			{/* Email List */}
+			<div className="bg-card border border-border rounded-lg overflow-hidden">
+				{/* Bulk Actions Header */}
+				{selectedEmails.size > 0 && (
+					<div className="bg-muted/50 border-b border-border p-4 flex items-center justify-between">
+						<div className="flex items-center space-x-4">
+							<span className="text-sm text-muted-foreground">{selectedEmails.size} selected</span>
+							<div className="flex items-center space-x-2">
+								<button className="p-2 hover:bg-muted rounded-lg transition-colors">
+									<Archive className="w-4 h-4" />
+								</button>
+								<button className="p-2 hover:bg-muted rounded-lg transition-colors">
+									<Trash2 className="w-4 h-4" />
+								</button>
+								<button className="p-2 hover:bg-muted rounded-lg transition-colors">
+									<Star className="w-4 h-4" />
+								</button>
+							</div>
+						</div>
+						<button
+							onClick={() => setSelectedEmails(new Set())}
+							className="text-sm text-muted-foreground hover:text-foreground"
+						>
+							Clear selection
+						</button>
+					</div>
+				)}
+
+				{/* List Header */}
+				<div className="border-b border-border p-4 flex items-center space-x-4">
+					<button onClick={handleSelectAll} className="p-1">
+						{selectedEmails.size === emails.length && emails.length > 0 ? (
+							<CheckCircle2 className="w-5 h-5 text-primary" />
+						) : (
+							<Circle className="w-5 h-5 text-muted-foreground" />
+						)}
+					</button>
+					<div className="flex-1 text-sm font-medium text-muted-foreground">Email</div>
+					<div className="w-24 text-sm font-medium text-muted-foreground text-right">Date</div>
+				</div>
+
+				{/* Email Items */}
+				<div className="divide-y divide-border">
+					{loading ? (
+						<div className="py-12">
+							<LoadingState />
+						</div>
+					) : emails.length === 0 ? (
+						<div className="text-center py-12">
+							<Mail className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+							<p className="text-muted-foreground">No emails found</p>
+						</div>
+					) : (
+						emails.map((email) => (
+							<div
+								key={email.id}
+								onClick={() => handleEmailClick(email.id)}
+								className={`p-4 hover:bg-muted/30 cursor-pointer transition-colors ${
+									!email.isRead ? "bg-muted/10" : ""
+								}`}
+							>
+								<div className="flex items-start space-x-4">
+									<button
+										onClick={(e) => {
+											e.stopPropagation()
+											handleEmailSelect(email.id)
+										}}
+										className="mt-1"
+									>
+										{selectedEmails.has(email.id) ? (
+											<CheckCircle2 className="w-5 h-5 text-primary" />
+										) : (
+											<Circle className="w-5 h-5 text-muted-foreground" />
+										)}
+									</button>
+
+									<button onClick={(e) => handleStarToggle(email.id, e)} className="mt-1">
+										<Star
+											className={`w-5 h-5 ${
+												email.isStarred ? "text-yellow-500 fill-current" : "text-muted-foreground"
+											}`}
+										/>
+									</button>
+
+									<div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center flex-shrink-0">
+										<span className="text-sm font-medium text-primary">
+											{getInitials(email.from.name)}
+										</span>
+									</div>
+
+									<div className="flex-1 min-w-0">
+										<div className="flex items-center justify-between mb-1">
+											<div className="flex items-center space-x-2">
+												<span
+													className={`font-medium ${
+														!email.isRead ? "text-foreground" : "text-muted-foreground"
+													}`}
+												>
+													{email.from.name}
+												</span>
+												{email.hasAttachments && (
+													<Paperclip className="w-4 h-4 text-muted-foreground" />
+												)}
+											</div>
+											<span className="text-sm text-muted-foreground">
+												{formatDate(email.date)}
+											</span>
+										</div>
+
+										<div
+											className={`font-medium mb-1 ${
+												!email.isRead ? "text-foreground" : "text-muted-foreground"
+											}`}
+										>
+											{email.subject}
+										</div>
+
+										<p className="text-sm text-muted-foreground line-clamp-2">{email.snippet}</p>
+
+										{email.labels.length > 0 && (
+											<div className="flex items-center space-x-2 mt-2">
+												{email.labels.map((label) => (
+													<span
+														key={label}
+														className="px-2 py-1 text-xs bg-chart-1 text-white rounded-full"
+													>
+														{label}
+													</span>
+												))}
+											</div>
+										)}
+									</div>
+								</div>
+							</div>
+						))
+					)}
+				</div>
+			</div>
+
+			{/* Pagination */}
+			{totalPages > 1 && (
+				<div className="flex items-center justify-between mt-6">
+					<div className="text-sm text-muted-foreground">
+						Showing {Math.min((currentPage - 1) * itemsPerPage + 1, totalCount)} to{" "}
+						{Math.min(currentPage * itemsPerPage, totalCount)} of {totalCount} emails
+					</div>
+
+					<div className="flex items-center space-x-2">
+						<button
+							onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+							disabled={currentPage === 1}
+							className="p-2 rounded-lg border border-border hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed"
+						>
+							<ChevronLeft className="w-5 h-5" />
+						</button>
+
+						<div className="flex items-center space-x-1">
+							{Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+								const page = i + 1
+								return (
+									<button
+										key={page}
+										onClick={() => setCurrentPage(page)}
+										className={`px-3 py-2 rounded-lg text-sm ${
+											currentPage === page ? "bg-primary text-primary-foreground" : "hover:bg-muted"
+										}`}
+									>
+										{page}
+									</button>
+								)
+							})}
+						</div>
+
+						<button
+							onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
+							disabled={currentPage === totalPages}
+							className="p-2 rounded-lg border border-border hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed"
+						>
+							<ChevronRight className="w-5 h-5" />
+						</button>
+					</div>
+				</div>
+			)}
 		</div>
 	)
 }

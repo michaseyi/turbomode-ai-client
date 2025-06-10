@@ -36,7 +36,7 @@ export default function NotesPage() {
 			queryKey: ["notes", debouncedSearchTerm],
 			queryFn: async ({ pageParam }) => {
 				if (debouncedSearchTerm) {
-					return await api.notes.searchNotes(debouncedSearchTerm, pageParam, 25)
+					return await api.notes.searchNotes(debouncedSearchTerm, pageParam, 4)
 				}
 				return await api.notes.fetchNotes(pageParam, 25)
 			},

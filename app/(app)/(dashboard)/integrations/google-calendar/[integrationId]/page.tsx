@@ -169,7 +169,7 @@ const CalendarPage = () => {
 	const isSyncDisabled = syncMutation.isPending
 
 	return (
-		<div className="bg-background text-foreground p-4">
+		<div className="bg-background text-foreground">
 			{/* Header */}
 			<div className="flex flex-row items-center justify-between mb-6 gap-4 md:gap-0">
 				<div className="flex items-center space-x-4 self-start">
