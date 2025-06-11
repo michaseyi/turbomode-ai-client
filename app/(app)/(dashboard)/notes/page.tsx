@@ -137,12 +137,12 @@ export default function NotesPage() {
 	const isSearching = searchInput !== debouncedSearchTerm && searchInput.length > 0
 
 	return (
-		<div className="space-y-8">
+		<div className="space-y-4 md:space-y-8 pb-6">
 			<div className="bg-card">
-				<div className="flex items-center justify-between mb-6">
+				<div className="flex items-center justify-between mb-4 md:mb-6">
 					<div className="flex items-center space-x-4">
-						<Notebook className="w-8 h-8 text-primary" />
-						<h1 className="text-3xl font-bold text-foreground">My Notes</h1>
+						<Notebook />
+						<h1 className="text-2xl font-bold text-foreground">My Notes</h1>
 					</div>
 					<Button
 						disabled={createNoteMutation.isPending}
@@ -198,7 +198,7 @@ export default function NotesPage() {
 						)}
 					</div>
 				) : (
-					<div className="grid gap-4">
+					<div className="grid gap-2 md:gap-4">
 						{notes.map((note) => {
 							const isLastItem = notes.at(-1)?.id === note.id
 
@@ -209,16 +209,16 @@ export default function NotesPage() {
 										router.push(`/notes/${note.id}`)
 									}}
 									key={note.id}
-									className="shadow-sm bg-card border border-border rounded-lg p-6 hover:bg-accent transition-colors cursor-pointer group"
+									className="bg-card border border-border rounded-lg p-3 md:p-6 hover:bg-accent transition-colors cursor-pointer group"
 								>
-									<div className="flex items-start justify-between mb-3">
-										<h3 className="text-lg font-semibold text-foreground group-hover:text-accent-foreground">
+									<div className="flex items-center md:items-start justify-between md:mb-3">
+										<h3 className="md:text-lg font-semibold text-foreground group-hover:text-accent-foreground">
 											{note.title}
 										</h3>
-										<div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+										<div className="flex items-center gap-2 md:opacity-0 group-hover:opacity-100 transition-opacity">
 											<Button
 												variant="ghost"
-												className="text-muted-foreground hover:text-foreground p-1 rounded cursor-pointer"
+												className="text-muted-foreground hover:text-foreground !p-1 rounded cursor-pointer"
 											>
 												<EditIcon className="w-4 h-4" />
 											</Button>
@@ -226,7 +226,7 @@ export default function NotesPage() {
 												variant="ghost"
 												disabled={deleteNoteMutation.isPending}
 												onClick={(e) => handleDeleteNote(note.id, e)}
-												className="cursor-pointer text-muted-foreground hover:text-destructive p-1 rounded"
+												className="cursor-pointer text-muted-foreground hover:text-destructive !p-1 rounded"
 											>
 												{deleteNoteMutation.isPending ? (
 													<Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
@@ -238,7 +238,7 @@ export default function NotesPage() {
 									</div>
 
 									{note.snippet && (
-										<p className="text-muted-foreground text-sm mb-4 line-clamp-1">
+										<p className="text-muted-foreground text-sm mb-1 md:mb-4 line-clamp-1">
 											{note.snippet}
 										</p>
 									)}

@@ -69,7 +69,7 @@ export default function GmailIntegrationPage() {
 	}
 
 	return (
-		<div>
+		<div className="pb-6">
 			<div className="mb-8 flex items-center gap-4">
 				<div className="flex shrink-0 h-12 w-12 items-center justify-center rounded-full bg-primary/10 p-2">
 					<Image src={Gmail} alt="Gmail" width={24} height={24} />

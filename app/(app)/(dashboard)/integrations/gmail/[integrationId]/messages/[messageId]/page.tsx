@@ -26,6 +26,7 @@ import { LoadingState } from "@/components/loading-state"
 import { useQuery } from "@tanstack/react-query"
 import { api } from "@/lib/api"
 import { ErrorState } from "@/components/error-state"
+import { IsolatedHtml } from "@/components/isolated-html"
 
 // TypeScript interfaces
 interface EmailAttachment {
@@ -187,17 +188,6 @@ export default function EmailDetailPage() {
 								<Forward className="w-5 h-5" />
 							</button>
 							<div className="w-px h-6 bg-border"></div>
-							{/* <button
-								onClick={handleStarToggle}
-								className="p-2 hover:bg-muted rounded-lg transition-colors"
-								title={email.isStarred ? "Remove star" : "Add star"}
-							>
-								<Star
-									className={`w-5 h-5 ${
-										email.isStarred ? "text-yellow-500 fill-current" : "text-muted-foreground"
-									}`}
-								/>
-							</button> */}
 							<button className="p-2 hover:bg-muted rounded-lg transition-colors" title="Archive">
 								<Archive className="w-5 h-5" />
 							</button>
@@ -223,16 +213,16 @@ export default function EmailDetailPage() {
 					{/* Email Content */}
 					<div className="bg-card border border-border rounded-lg overflow-hidden">
 						{/* Email Header */}
-						<div className="p-6 border-b border-border">
-							<div className="flex items-start justify-between mb-4">
-								<div className="flex items-start space-x-4">
-									<div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center flex-shrink-0">
+						<div className="p-3 md:p-6 border-b border-border">
+							<div className="flex flex-col md:flex-row gap-2 items-start justify-between mb-4">
+								<div className="flex items-start space-x-2 md:space-x-4">
+									<div className="w-8 h-8 md:w-10 md:h-10 bg-primary/20 rounded-full flex items-center justify-center flex-shrink-0">
 										<span className="text-lg font-medium text-primary">
 											{getInitials(email.from!)}
 										</span>
 									</div>
 									<div className="flex-1">
-										<h2 className="text-xl font-semibold mb-2">{email.subject}</h2>
+										<h2 className="text-lg md:text-xl font-semibold mb-2">{email.subject}</h2>
 										<div className="space-y-1 text-sm text-muted-foreground">
 											<div className="flex items-center space-x-2">
 												<User className="w-4 h-4" />
@@ -354,9 +344,7 @@ export default function EmailDetailPage() {
 							</div>
 						)} */}
 
-						<div className="p-6">
-							<div className="prose" dangerouslySetInnerHTML={{ __html: email.body! }}></div>
-						</div>
+						<IsolatedHtml className="w-fit mx-auto p-2 md:p-5" htmlContent={email.body!} />
 					</div>
 
 					<div className="mt-6 bg-card border border-border rounded-lg p-6">

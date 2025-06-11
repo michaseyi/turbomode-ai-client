@@ -169,12 +169,13 @@ const CalendarPage = () => {
 	const isSyncDisabled = syncMutation.isPending
 
 	return (
-		<div className="bg-background text-foreground">
+		<div className="bg-background text-foreground pb-6">
 			{/* Header */}
-			<div className="flex flex-row items-center justify-between mb-6 gap-4 md:gap-0">
-				<div className="flex items-center space-x-4 self-start">
-					<h1 className="text-3xl font-bold text-primary">Calendar</h1>
-					<Button disabled={isSyncDisabled} onClick={goToToday}>
+			<div className="flex flex-col md:flex-row items-center justify-between mb-4 md:mb-6 gap-4 md:gap-0">
+				<div className="flex w-full md:w-fit items-center space-x-4 self-start">
+					<h1 className="text-2xl font-bold text-primary">Calendar</h1>
+
+					<Button className="ml-auto" disabled={isSyncDisabled} onClick={goToToday}>
 						Today
 					</Button>
 					<Button disabled={isSyncDisabled} variant="outline" onClick={sync}>
@@ -186,7 +187,7 @@ const CalendarPage = () => {
 					</Button>
 				</div>
 
-				<div className="flex self-start items-center space-x-4">
+				<div className="flex md:self-start items-center space-x-4">
 					{/* View Toggle */}
 					{/* <div className="flex bg-muted rounded-lg p-1">
 						{["month", "week", "day"].map((v) => (

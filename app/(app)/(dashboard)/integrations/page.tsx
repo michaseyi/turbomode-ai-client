@@ -5,7 +5,7 @@ import { Integrations } from "@/components/integrations"
 
 export default function IntegrationsPage() {
 	return (
-		<div>
+		<div className="pb-6">
 			<div className="mb-8 flex items-center gap-4">
 				<div className="flex shrink-0 h-12 w-12 items-center justify-center rounded-full bg-primary/10 p-2">
 					<Blocks />

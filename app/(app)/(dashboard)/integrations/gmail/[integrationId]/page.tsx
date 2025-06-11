@@ -14,7 +14,7 @@ export default function EmailListPage() {
 		useInfiniteQuery({
 			queryKey: ["gmail-messages", integrationId],
 			queryFn: async ({ pageParam }) => {
-				return await api.integrations.fetchGmailMessages(integrationId, pageParam, 15)
+				return await api.integrations.fetchGmailMessages(integrationId, pageParam, 20)
 			},
 			initialPageParam: 1,
 			getNextPageParam: (lastPage) => {
@@ -90,14 +90,14 @@ export default function EmailListPage() {
 
 	return (
 		<div className="bg-background text-foreground pb-6">
-			<div className="flex items-center justify-between mb-6">
+			<div className="flex items-center justify-between mb-4 md:mb-6">
 				<div className="flex items-center space-x-4">
-					<Mail className="w-8 h-8 text-primary" />
-					<h1 className="text-3xl font-bold text-primary">Inbox</h1>
+					<Mail />
+					<h1 className="text-2xl font-bold text-primary">Inbox</h1>
 				</div>
 			</div>
 
-			<div className="mb-6 space-y-4">
+			<div className="mb-4 md:mb-6 space-y-4">
 				<div className="relative">
 					<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
 					<input
@@ -109,7 +109,7 @@ export default function EmailListPage() {
 				</div>
 			</div>
 
-			<div className="bg-card border border-border rounded-lg overflow-hidden divide-y divide-border">
+			<div className="bg-card overflow-hidden space-y-2 md:space-y-4">
 				{isLoading ? (
 					<div className="py-12">
 						<LoadingState />
@@ -134,35 +134,35 @@ export default function EmailListPage() {
 								ref={isLastItem ? bottomRef : null}
 								key={email.id}
 								onClick={() => handleEmailClick(email.id)}
-								className={`p-4 hover:bg-muted/30 cursor-pointer transition-colors ${
+								className={`p-2 md:p-4 hover:bg-muted/30 cursor-pointer transition-colors border border-border  rounded-lg ${
 									email.isUnread ? "bg-muted/10" : ""
 								}`}
 							>
-								<div className="flex items-start space-x-4">
-									<div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center flex-shrink-0">
+								<div className="flex items-start space-x-2 md:space-x-4">
+									<div className="w-8 h-8 md:w-10 md:h-10 bg-primary/20 rounded-full flex items-center justify-center flex-shrink-0">
 										<span className="text-lg font-medium text-primary">
 											{getInitials(email.from || "")}
 										</span>
 									</div>
 
-									<div className="flex-1 min-w-0">
-										<div className="flex items-center justify-between mb-1">
+									<div className="flex-1 min-w-0 md:text-base text-sm">
+										<div className="flex items-center justify-between md;mb-1">
 											<div className="flex items-center space-x-2">
 												<span
-													className={`font-medium ${
+													className={`font-medium line-clamp-1 ${
 														email.isUnread ? "text-foreground" : "text-muted-foreground"
 													}`}
 												>
 													{email.from || ""}
 												</span>
 											</div>
-											<span className="text-sm text-muted-foreground">
+											<span className="text-xs md:text-sm text-muted-foreground shrink-0">
 												{formatDate(email.internalDate)}
 											</span>
 										</div>
 
 										<div
-											className={`font-medium mb-1 line-clamp-1 ${
+											className={`font-medium md:mb-1 line-clamp-1 ${
 												email.isUnread ? "text-foreground" : "text-muted-foreground"
 											}`}
 										>
@@ -172,7 +172,7 @@ export default function EmailListPage() {
 										<p className="text-sm text-muted-foreground line-clamp-1">{email.snippet}</p>
 
 										{email.labelIds.length > 0 && (
-											<div className="flex items-center space-x-2 mt-2">
+											<div className="hidden md:flex items-center space-x-2 mt-2">
 												{email.labelIds.map((label) => (
 													<span
 														key={label}
