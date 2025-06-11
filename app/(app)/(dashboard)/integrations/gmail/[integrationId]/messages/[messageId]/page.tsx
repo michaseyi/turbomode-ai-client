@@ -27,6 +27,7 @@ import { useQuery } from "@tanstack/react-query"
 import { api } from "@/lib/api"
 import { ErrorState } from "@/components/error-state"
 import { IsolatedHtml } from "@/components/isolated-html"
+import { EmailComposer } from "@/components/email-composer"
 
 // TypeScript interfaces
 interface EmailAttachment {
@@ -350,10 +351,7 @@ export default function EmailDetailPage() {
 					<div className="mt-6 bg-card border border-border rounded-lg p-6">
 						<h3 className="font-medium mb-4">Quick Reply</h3>
 						<div className="space-y-4">
-							<textarea
-								className="w-full h-32 p-3 bg-background border border-border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-ring"
-								placeholder="Type your reply..."
-							/>
+							<EmailComposer />
 							<div className="flex items-center justify-between">
 								<div className="flex items-center space-x-2">
 									<button className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">

@@ -1,0 +1,44 @@
+.bn-container[data-theming-css-variables-demo][data-color-scheme] {
+	/* BlockNote CSS variables mapped to your theme */
+	--bn-colors-editor-text: var(--foreground);
+	--bn-colors-editor-background: var(--background);
+	--bn-colors-menu-text: var(--foreground);
+	--bn-colors-menu-background: var(--sidebar);
+	--bn-colors-tooltip-text: var(--popover-foreground);
+	--bn-colors-tooltip-background: var(--popover);
+	--bn-colors-hovered-text: var(--accent-foreground);
+	--bn-colors-hovered-background: var(--accent);
+	--bn-colors-selected-text: var(--primary-foreground);
+	--bn-colors-selected-background: var(--primary);
+	--bn-colors-disabled-text: var(--muted-foreground);
+	--bn-colors-disabled-background: var(--muted);
+	--bn-colors-shadow: var(--background);
+	--bn-colors-border: var(--border);
+	--bn-colors-side-menu: var(--muted-foreground);
+
+	/* Highlight colors using your chart colors */
+	--bn-colors-highlights-gray-text: var(--muted-foreground);
+	--bn-colors-highlights-gray-background: var(--muted);
+	--bn-colors-highlights-brown-text: var(--chart-1);
+	--bn-colors-highlights-brown-background: var(--accent);
+	--bn-colors-highlights-red-text: var(--destructive);
+	--bn-colors-highlights-red-background: var(--accent);
+	--bn-colors-highlights-orange-text: var(--chart-1);
+	--bn-colors-highlights-orange-background: var(--accent);
+	--bn-colors-highlights-yellow-text: var(--chart-4);
+	--bn-colors-highlights-yellow-background: var(--accent);
+	--bn-colors-highlights-green-text: var(--chart-2);
+	--bn-colors-highlights-green-background: var(--accent);
+	--bn-colors-highlights-blue-text: var(--chart-3);
+	--bn-colors-highlights-blue-background: var(--accent);
+	--bn-colors-highlights-purple-text: var(--ring);
+	--bn-colors-highlights-purple-background: var(--accent);
+	--bn-colors-highlights-pink-text: var(--chart-5);
+	--bn-colors-highlights-pink-background: var(--accent);
+
+	/* Font and border radius */
+	/* --bn-font-family: "Inter", "SF Pro Display", -apple-system, BlinkMacSystemFont, "Open Sans",
+		"Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
+		"Helvetica Neue", sans-serif; */
+	--bn-border-radius: var(--radius);
+}
