@@ -54,7 +54,10 @@ export function useMessages(actionId: string) {
 			return (await api.actions.listActionChatHistory(actionId)).data
 		},
 		retry: false,
-		refetchInterval: false,
+		// enabled: false,
+		refetchOnWindowFocus: false,
+		refetchOnReconnect: false,
+		refetchOnMount: false,
 	})
 
 	const queryClient = useQueryClient()

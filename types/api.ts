@@ -143,3 +143,21 @@ export type Note = Omit<DetailedNote, "content">
 export type UpdateNoteProps = Partial<
 	Pick<DetailedNote, "archived" | "content" | "favorite" | "pinned" | "title">
 >
+
+export type FullGmailMessage = {
+	id: string
+	snippet: string | null
+	from: string | null
+	to: string[]
+	subject: string | null
+	cc: string[]
+	bcc: string[]
+	labelIds: string[]
+	body: string | null
+	isUnread: boolean
+	internalDate: string
+	createdAt: string
+	updatedAt: string
+}
+
+export type PartialGmailMessage = Omit<FullGmailMessage, "body">

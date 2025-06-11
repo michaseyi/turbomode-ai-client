@@ -1,7 +1,16 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { PlusIcon, EditIcon, TrashIcon, CalendarIcon, Search, Loader2 } from "lucide-react"
+import {
+	PlusIcon,
+	EditIcon,
+	TrashIcon,
+	CalendarIcon,
+	Search,
+	Loader2,
+	Mail,
+	Notebook,
+} from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
 import { api } from "@/lib/api"
@@ -131,7 +140,10 @@ export default function NotesPage() {
 		<div className="space-y-8">
 			<div className="bg-card">
 				<div className="flex items-center justify-between mb-6">
-					<h1 className="text-3xl font-bold text-foreground">My Notes</h1>
+					<div className="flex items-center space-x-4">
+						<Notebook className="w-8 h-8 text-primary" />
+						<h1 className="text-3xl font-bold text-foreground">My Notes</h1>
+					</div>
 					<Button
 						disabled={createNoteMutation.isPending}
 						onClick={handleCreateNote}

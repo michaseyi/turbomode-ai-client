@@ -3,9 +3,12 @@ import {
 	ApiDataResponse,
 	CalendarEvent,
 	CalendarIntegration,
+	FullGmailMessage,
 	GmailIntegration,
 	Integrations,
 	ModifyGmailIntegration,
+	PaginatedApiDataResponse,
+	PartialGmailMessage,
 } from "@/types/api"
 
 export async function newGmailIntegration() {
@@ -107,4 +110,28 @@ export async function syncGoogleCalendarEvents(integrationId: string, month: Dat
 			date: month.toISOString(),
 		})
 	)
+}
+
+export async function fetchGmailMessages(integrationId: string, page: number, limit: number) {
+	const response = await wrapper(() =>
+		request.get<PaginatedApiDataResponse<PartialGmailMessage[]>>(
+			`/integrations/gmail/${integrationId}/messages`,
+			{
+				params: {
+					page,
+					limit,
+				},
+			}
+		)
+	)
+	return response.data
+}
+
+export async function fetchGmailMessage(integrationId: string, messageId: string) {
+	const response = await wrapper(() =>
+		request.get<ApiDataResponse<FullGmailMessage>>(
+			`/integrations/gmail/${integrationId}/messages/${messageId}`
+		)
+	)
+	return response.data
 }

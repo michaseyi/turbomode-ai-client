@@ -11,7 +11,7 @@ import {
 	ChatMessage,
 	useMessages,
 	UserMessageType,
-} from "@/hooks/useMessages"
+} from "@/hooks/use-messages"
 import { useParams } from "next/navigation"
 import { useAuthUser } from "@/hooks/use-auth-user"
 import { ChatInput } from "@/components/chat/chat-input"

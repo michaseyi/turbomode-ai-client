@@ -7,7 +7,7 @@ import { useCreateBlockNote } from "@blocknote/react"
 import React, { useCallback, useEffect, useRef, useState } from "react"
 
 import "./styles.css"
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { api } from "@/lib/api"
 import { toast } from "sonner"
@@ -15,13 +15,12 @@ import { UpdateNoteProps } from "@/types/api"
 import { LoadingState } from "@/components/loading-state"
 import { ErrorState } from "@/components/error-state"
 import { Button } from "@/components/ui/button"
-import { CheckCircle2, Cloud, CloudOff, Loader2, WifiOff } from "lucide-react"
+import { ArrowLeft, CheckCircle2, Cloud, CloudOff, Loader2, WifiOff } from "lucide-react"
 
 type SaveStatus = "saved" | "saving" | "pending" | "error" | "offline"
 
 export default function NoteItemPage() {
 	const { noteId } = useParams<{ noteId: string }>()
-	const queryClient = useQueryClient()
 
 	const { data, isLoading, isError, refetch } = useQuery({
 		queryKey: ["notes", noteId],
@@ -29,6 +28,7 @@ export default function NoteItemPage() {
 			return await api.notes.fetchNote(noteId)
 		},
 	})
+	const router = useRouter()
 
 	const [saveStatus, setSaveStatus] = useState<SaveStatus>("saved")
 	const [lastSaved, setLastSaved] = useState<Date>()
@@ -61,7 +61,6 @@ export default function NoteItemPage() {
 			})
 		},
 		onSuccess: () => {
-			// queryClient.invalidateQueries({ queryKey: ["notes", noteId] })
 			setSaveStatus("saved")
 			setLastSaved(new Date())
 			pendingChangesRef.current = false
@@ -131,6 +130,10 @@ export default function NoteItemPage() {
 			title,
 			content: editor.document,
 		})
+	}
+
+	const handleGoBack = () => {
+		router.back()
 	}
 
 	// online/offline detection
@@ -237,19 +240,31 @@ export default function NoteItemPage() {
 		/>
 	) : (
 		<div className="h-full note-editor bg-background text-foreground">
-			<div className="mb-6 flex flex-col space-y-2">
-				<div className="flex items-center gap-3">
+			<div className="mb-6 flex gap-x-2">
+				<div className="flex items-center space-x-4">
+					<button
+						onClick={handleGoBack}
+						className="p-2 hover:bg-muted rounded-lg transition-colors"
+					>
+						<ArrowLeft className="w-5 h-5" />
+					</button>
+				</div>
+				<div className="flex-1">
+					<input
+						type="text"
+						className="w-full bg-card pl-3 pr-2 py-1 rounded-md text-xl md:text-3xl font-semibold text-primary focus:outline-none transition"
+						value={title}
+						onChange={handleTitleChange}
+						placeholder="Title..."
+					/>
+				</div>
+				<div className="flex items-center justify-end ml-auto pr-2 min-w-24">
 					<SaveStatusIndicator />
 				</div>
-				<input
-					type="text"
-					className="flex-1 w-full bg-card border border-border rounded-lg px-2 md:px-4 py-2 md:py-3 text-xl md:text-3xl font-semibold text-primary focus:outline-none focus:ring-2 focus:ring-muted transition"
-					value={title}
-					onChange={handleTitleChange}
-					placeholder="Title..."
-				/>
 			</div>
-			<BlockNoteView editor={editor} data-theming-css-variables-demo />
+			<div className="border border-border rounded-lg pb-6 pt-3">
+				<BlockNoteView editor={editor} data-theming-css-variables-demo />
+			</div>
 		</div>
 	)
 }

@@ -8,13 +8,6 @@ import { ConnectedAccounts } from "@/components/gmail-integration/connected-acco
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 
-type EmailAccount = {
-	id: number
-	provider: string
-	connectedAt: Date
-	email: string
-}
-
 export default function GmailIntegrationPage() {
 	const queryClient = useQueryClient()
 
