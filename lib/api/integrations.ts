@@ -7,8 +7,10 @@ import {
 	GmailIntegration,
 	Integrations,
 	ModifyGmailIntegration,
+	NewEmailPayload,
 	PaginatedApiDataResponse,
 	PartialGmailMessage,
+	ReplyEmailPayload,
 } from "@/types/api"
 
 export async function newGmailIntegration() {
@@ -131,6 +133,19 @@ export async function fetchGmailMessage(integrationId: string, messageId: string
 	const response = await wrapper(() =>
 		request.get<ApiDataResponse<FullGmailMessage>>(
 			`/integrations/gmail/${integrationId}/messages/${messageId}`
+		)
+	)
+	return response.data
+}
+
+export async function sendGmailMessage(
+	integrationId: string,
+	payload: NewEmailPayload | ReplyEmailPayload
+) {
+	const response = await wrapper(() =>
+		request.post<ApiDataResponse<undefined>>(
+			`/integrations/gmail/${integrationId}/messages/send`,
+			payload
 		)
 	)
 	return response.data

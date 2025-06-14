@@ -27,7 +27,7 @@ import { useQuery } from "@tanstack/react-query"
 import { api } from "@/lib/api"
 import { ErrorState } from "@/components/error-state"
 import { IsolatedHtml } from "@/components/isolated-html"
-import { EmailComposer } from "@/components/email-composer"
+import { EmailComposer } from "@/components/gmail-integration/email-composer"
 
 // TypeScript interfaces
 interface EmailAttachment {
@@ -64,14 +64,6 @@ interface EmailDetail {
 	messageId: string
 	inReplyTo?: string
 	references?: string[]
-}
-
-interface EmailThread {
-	id: string
-	subject: string
-	messages: EmailDetail[]
-	participants: EmailParticipant[]
-	totalMessages: number
 }
 
 export default function EmailDetailPage() {
@@ -211,8 +203,7 @@ export default function EmailDetailPage() {
 						</div>
 					</div>
 
-					{/* Email Content */}
-					<div className="bg-card border border-border rounded-lg overflow-hidden">
+					<div className="bg-card border border-border rounded-lg overflow-hidden shadow-xs">
 						{/* Email Header */}
 						<div className="p-3 md:p-6 border-b border-border">
 							<div className="flex flex-col md:flex-row gap-2 items-start justify-between mb-4">
@@ -298,74 +289,13 @@ export default function EmailDetailPage() {
 							</div>
 						</div>
 
-						{/* Attachments */}
-						{/* {email.attachments.length > 0 && (
-							<div className="p-6 border-b border-border">
-								<div className="flex items-center space-x-2 mb-4">
-									<Paperclip className="w-5 h-5 text-muted-foreground" />
-									<span className="font-medium">
-										{email.attachments.length} Attachment{email.attachments.length !== 1 ? "s" : ""}
-									</span>
-								</div>
-								<div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-									{email.attachments.map((attachment) => (
-										<div
-											key={attachment.id}
-											className="flex items-center justify-between p-3 bg-muted/30 rounded-lg"
-										>
-											<div className="flex items-center space-x-3">
-												<div className="w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center">
-													<Paperclip className="w-5 h-5 text-primary" />
-												</div>
-												<div>
-													<div className="font-medium text-sm">{attachment.filename}</div>
-													<div className="text-xs text-muted-foreground">
-														{formatFileSize(attachment.size)}
-													</div>
-												</div>
-											</div>
-											<div className="flex items-center space-x-2">
-												<button
-													onClick={() => handleDownloadAttachment(attachment)}
-													className="p-2 hover:bg-muted rounded-lg transition-colors"
-													title="Download"
-												>
-													<Download className="w-4 h-4" />
-												</button>
-												<button
-													className="p-2 hover:bg-muted rounded-lg transition-colors"
-													title="Preview"
-												>
-													<Eye className="w-4 h-4" />
-												</button>
-											</div>
-										</div>
-									))}
-								</div>
-							</div>
-						)} */}
-
 						<IsolatedHtml className="w-fit mx-auto p-2 md:p-5" htmlContent={email.body!} />
 					</div>
 
-					<div className="mt-6 bg-card border border-border rounded-lg p-6">
+					<div className="mt-6">
 						<h3 className="font-medium mb-4">Quick Reply</h3>
-						<div className="space-y-4">
-							<EmailComposer />
-							<div className="flex items-center justify-between">
-								<div className="flex items-center space-x-2">
-									<button className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
-										Send
-									</button>
-									<button className="px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors">
-										Save Draft
-									</button>
-								</div>
-								<div className="flex items-center space-x-2 text-sm text-muted-foreground">
-									<Paperclip className="w-4 h-4" />
-									<span>Attach files</span>
-								</div>
-							</div>
+						<div className="border border-border rounded-lg overflow-hidden shadow-xs h-[200px]">
+							<EmailComposer integrationId={integrationId} isReply={true} messageId={messageId} />
 						</div>
 					</div>
 				</div>

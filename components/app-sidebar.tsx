@@ -11,6 +11,9 @@ import {
 	SidebarMenuAction,
 	SidebarMenuButton,
 	SidebarMenuItem,
+	SidebarMenuSub,
+	SidebarMenuSubButton,
+	SidebarMenuSubItem,
 } from "@/components/ui/sidebar"
 
 import {
@@ -19,7 +22,17 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Blocks, Home, Loader2, MoreHorizontal, NotebookIcon, Plus } from "lucide-react"
+import {
+	Blocks,
+	ChevronDown,
+	ChevronLeft,
+	ChevronRight,
+	Home,
+	Loader2,
+	MoreHorizontal,
+	NotebookIcon,
+	Plus,
+} from "lucide-react"
 import { NavUser } from "./nav-user"
 import Link from "next/link"
 
@@ -31,6 +44,9 @@ import { EmptyState } from "./empty-state"
 import { ErrorState } from "./error-state"
 import { LoadingState } from "./loading-state"
 import { useRouter } from "next/navigation"
+import { GmailIntegration } from "@/types/api"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./ui/collapsible"
+import { useLocalStorage } from "@/hooks/use-localstroage"
 
 const navigations = [
 	{
@@ -194,6 +210,50 @@ function TaskSidebarGroup() {
 	)
 }
 
+function GmailIntegrationSidebarGroup({ item }: { item: GmailIntegration }) {
+	const categories = [
+		{ label: "Inbox", value: "inbox" },
+		{ label: "Primary", value: "primary" },
+		{ label: "Sent", value: "sent" },
+	]
+
+	const [isExpanded, setIsExpanded] = useLocalStorage(`gmail-integration-${item.id}`, false)
+
+	return (
+		<Collapsible className="group/collapsible" open={isExpanded} onOpenChange={setIsExpanded}>
+			<SidebarMenuItem>
+				<CollapsibleTrigger asChild>
+					<SidebarMenuButton asChild>
+						<div className="flex items-center justify-between">
+							<Link className="min-w-0 truncate" href={`/integrations/gmail/${item.id}`}>
+								<span className="!text-clip relative fade-text">Gmail ({item.gmail.email})</span>
+							</Link>
+
+							<ChevronRight className="group-[data-collapsible]/collapsible:bg-red-300" />
+						</div>
+					</SidebarMenuButton>
+				</CollapsibleTrigger>
+				<CollapsibleContent>
+					<SidebarMenuSub>
+						{categories.map((category) => (
+							<SidebarMenuSubItem key={category.value}>
+								<SidebarMenuSubButton asChild>
+									<Link
+										href={`/integrations/gmail/${item.id}/#${category.value}`}
+										className="!text-clip relative fade-text"
+									>
+										{category.label}
+									</Link>
+								</SidebarMenuSubButton>
+							</SidebarMenuSubItem>
+						))}
+					</SidebarMenuSub>
+				</CollapsibleContent>
+			</SidebarMenuItem>
+		</Collapsible>
+	)
+}
+
 function IntegrationSidebarGroup() {
 	const router = useRouter()
 
@@ -223,6 +283,10 @@ function IntegrationSidebarGroup() {
 			<SidebarGroupContent>
 				<SidebarMenu>
 					{data.map((item, pageIndex) => {
+						if (item.type === "Gmail") {
+							return <GmailIntegrationSidebarGroup key={item.id} item={item} />
+						}
+
 						return (
 							<SidebarMenuItem className="group" key={item.id}>
 								<SidebarMenuButton asChild>
@@ -253,18 +317,7 @@ export function AppSidebar() {
 	const user = useAuthUser()
 	return (
 		<Sidebar collapsible="offcanvas">
-			<SidebarHeader className="h-12">
-				{/* <SidebarMenu>
-					<SidebarMenuItem>
-						<SidebarMenuButton asChild className="data-[slot=sidebar-menu-button]:!p-1.5">
-							<Link href="/">
-								<Image src={Logo} alt="TruboMode AI" className="h-6 w-6" width={100} />
-								<span className="text-base font-medium">TurboMode AI</span>
-							</Link>
-						</SidebarMenuButton>
-					</SidebarMenuItem>
-				</SidebarMenu> */}
-			</SidebarHeader>
+			<SidebarHeader className="h-12"></SidebarHeader>
 			<SidebarContent>
 				<DefaultSidebarGroup />
 				<IntegrationSidebarGroup />

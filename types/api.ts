@@ -161,3 +161,17 @@ export type FullGmailMessage = {
 }
 
 export type PartialGmailMessage = Omit<FullGmailMessage, "body">
+
+export type ReplyEmailPayload = {
+	messageId: string
+	body: string
+}
+
+export type NewEmailPayload = {
+	subject: string
+	to: string[]
+	body: string
+}
+
+
+
