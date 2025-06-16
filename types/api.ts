@@ -62,6 +62,7 @@ export type GmailIntegration = {
 		instruction: string
 		specificAddresses: string | null
 		emailProcessOption: "All" | "ExceptSpecific" | "FromSpecific"
+		messageLabels: { labelId: string; labelName: string }[]
 	}
 	createdAt: string
 	updatedAt: string
@@ -172,6 +173,3 @@ export type NewEmailPayload = {
 	to: string[]
 	body: string
 }
-
-
-

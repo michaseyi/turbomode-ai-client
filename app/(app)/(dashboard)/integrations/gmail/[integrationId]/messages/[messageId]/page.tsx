@@ -16,11 +16,8 @@ import {
 	Calendar,
 	Clock,
 	User,
-	ChevronDown,
-	ChevronUp,
 	Printer,
 } from "lucide-react"
-import ReactMarkdown from "react-markdown"
 import { useParams, useRouter } from "next/navigation"
 import { LoadingState } from "@/components/loading-state"
 import { useQuery } from "@tanstack/react-query"
@@ -28,43 +25,6 @@ import { api } from "@/lib/api"
 import { ErrorState } from "@/components/error-state"
 import { IsolatedHtml } from "@/components/isolated-html"
 import { EmailComposer } from "@/components/gmail-integration/email-composer"
-
-// TypeScript interfaces
-interface EmailAttachment {
-	id: string
-	filename: string
-	size: number
-	mimeType: string
-	downloadUrl?: string
-}
-
-interface EmailParticipant {
-	name: string
-	email: string
-}
-
-interface EmailDetail {
-	id: string
-	threadId: string
-	from: EmailParticipant
-	to: EmailParticipant[]
-	cc?: EmailParticipant[]
-	bcc?: EmailParticipant[]
-	replyTo?: EmailParticipant
-	subject: string
-	body: {
-		html?: string
-		text: string
-	}
-	date: string
-	isRead: boolean
-	isStarred: boolean
-	labels: string[]
-	attachments: EmailAttachment[]
-	messageId: string
-	inReplyTo?: string
-	references?: string[]
-}
 
 export default function EmailDetailPage() {
 	const { messageId, integrationId } = useParams<{
@@ -124,8 +84,6 @@ export default function EmailDetailPage() {
 	const handleReply = (mode: "reply" | "replyAll" | "forward") => {
 		setReplyMode(mode)
 	}
-
-	const handleDownloadAttachment = (attachment: EmailAttachment) => {}
 
 	const handlePrint = () => {
 		window.print()
@@ -204,7 +162,6 @@ export default function EmailDetailPage() {
 					</div>
 
 					<div className="bg-card border border-border rounded-lg overflow-hidden shadow-xs">
-						{/* Email Header */}
 						<div className="p-3 md:p-6 border-b border-border">
 							<div className="flex flex-col md:flex-row gap-2 items-start justify-between mb-4">
 								<div className="flex items-start space-x-2 md:space-x-4">
@@ -229,20 +186,6 @@ export default function EmailDetailPage() {
 										</div>
 									</div>
 								</div>
-
-								{/* Labels */}
-								{email.labelIds.length > 0 && (
-									<div className="flex flex-wrap gap-2">
-										{email.labelIds.map((label) => (
-											<span
-												key={label}
-												className="px-2 py-1 text-xs bg-chart-1 text-white rounded-full"
-											>
-												{label.toLowerCase()}
-											</span>
-										))}
-									</div>
-								)}
 							</div>
 
 							{/* Recipients */}

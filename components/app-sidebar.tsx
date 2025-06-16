@@ -39,7 +39,7 @@ import Link from "next/link"
 import { useAuthUser as useAuthUser } from "@/hooks/use-auth-user"
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query"
 import { api } from "@/lib/api"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { EmptyState } from "./empty-state"
 import { ErrorState } from "./error-state"
 import { LoadingState } from "./loading-state"
@@ -47,6 +47,8 @@ import { useRouter } from "next/navigation"
 import { GmailIntegration } from "@/types/api"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./ui/collapsible"
 import { useLocalStorage } from "@/hooks/use-localstroage"
+import { cn } from "@/lib/utils"
+import { Button } from "./ui/button"
 
 const navigations = [
 	{
@@ -166,7 +168,7 @@ function TaskSidebarGroup() {
 								return (
 									<SidebarMenuItem
 										ref={isLastItem ? bottomRef : null}
-										className="group"
+										className="group/action"
 										key={item.id}
 									>
 										<SidebarMenuButton asChild>
@@ -176,12 +178,12 @@ function TaskSidebarGroup() {
 										</SidebarMenuButton>
 										<DropdownMenu>
 											<DropdownMenuTrigger asChild>
-												<SidebarMenuAction>
+												<SidebarMenuAction className="!bg-transparent cursor-pointer">
 													<div className="relative">
 														{item.active && (
-															<Loader2 className="w-5 h-5 group-hover:opacity-0 absolute animate-spin text-muted-foreground" />
+															<Loader2 className="group-hover/action:opacity-0 absolute animate-spin text-muted-foreground" />
 														)}
-														<MoreHorizontal className="group-hover:opacity-100 opacity-0 text-muted-foreground" />
+														<MoreHorizontal className="group-hover/action:opacity-100 opacity-0 text-muted-foreground" />
 													</div>
 												</SidebarMenuAction>
 											</DropdownMenuTrigger>
@@ -211,40 +213,112 @@ function TaskSidebarGroup() {
 }
 
 function GmailIntegrationSidebarGroup({ item }: { item: GmailIntegration }) {
-	const categories = [
-		{ label: "Inbox", value: "inbox" },
-		{ label: "Primary", value: "primary" },
-		{ label: "Sent", value: "sent" },
-	]
-
 	const [isExpanded, setIsExpanded] = useLocalStorage(`gmail-integration-${item.id}`, false)
 
+	type Categories = {
+		[key: string]: { id: string; name: string }[] | { id: string; name: string }
+	}
+	const categories = useMemo(() => {
+		return item.gmail.messageLabels.reduce<Categories>((acc, category) => {
+			// ignore list
+			if (["yellow_star", "chat", "trash"].includes(category.labelId.toLowerCase())) {
+				return acc
+			}
+
+			if (category.labelId.toLowerCase().startsWith("category")) {
+				const name = category.labelName.substring("category_".length)
+				const group = "Categories"
+				if (!acc[group]) {
+					acc[group] = []
+				}
+				if (Array.isArray(acc[group])) {
+					acc[group].push({
+						id: category.labelId,
+						name: name.length > 1 ? name[0].toUpperCase() + name.slice(1).toLowerCase() : name,
+					})
+				}
+			} else if (category.labelId.toLowerCase().startsWith("label")) {
+				const name = category.labelName
+				const group = "Labels"
+				if (!acc[group]) {
+					acc[group] = []
+				}
+				if (Array.isArray(acc[group])) {
+					acc[group].push({
+						id: category.labelId,
+						name,
+					})
+				}
+			} else {
+				acc[category.labelId] = {
+					id: category.labelId,
+					name: category.labelName[0].toUpperCase() + category.labelName.slice(1).toLowerCase(),
+				}
+			}
+			return acc
+		}, {})
+	}, [item.gmail.messageLabels])
+
 	return (
-		<Collapsible className="group/collapsible" open={isExpanded} onOpenChange={setIsExpanded}>
+		<Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
 			<SidebarMenuItem>
 				<CollapsibleTrigger asChild>
 					<SidebarMenuButton asChild>
-						<div className="flex items-center justify-between">
-							<Link className="min-w-0 truncate" href={`/integrations/gmail/${item.id}`}>
-								<span className="!text-clip relative fade-text">Gmail ({item.gmail.email})</span>
-							</Link>
-
-							<ChevronRight className="group-[data-collapsible]/collapsible:bg-red-300" />
-						</div>
+						<button
+							className="flex items-center justify-between cursor-pointer"
+							title={`Gmail (${item.gmail.email})`}
+						>
+							<ChevronRight
+								className={cn(
+									"transition-transform duration-400",
+									isExpanded ? "rotate-90" : "rotate-0"
+								)}
+							/>
+							<span className="truncate">Gmail ({item.gmail.email})</span>
+						</button>
 					</SidebarMenuButton>
 				</CollapsibleTrigger>
 				<CollapsibleContent>
 					<SidebarMenuSub>
-						{categories.map((category) => (
-							<SidebarMenuSubItem key={category.value}>
-								<SidebarMenuSubButton asChild>
-									<Link
-										href={`/integrations/gmail/${item.id}/#${category.value}`}
-										className="!text-clip relative fade-text"
-									>
-										{category.label}
-									</Link>
-								</SidebarMenuSubButton>
+						{Object.entries(categories).map(([key, value]) => (
+							<SidebarMenuSubItem key={key}>
+								{Array.isArray(value) ? (
+									<Collapsible>
+										<CollapsibleTrigger asChild>
+											<SidebarMenuSubButton asChild>
+												<button className="flex items-center w-full">
+													<ChevronDown className={`w-4 h-4`} />
+													<span className="!text-clip relative fade-text truncate">{key}</span>
+												</button>
+											</SidebarMenuSubButton>
+										</CollapsibleTrigger>
+										<CollapsibleContent>
+											<SidebarMenuSub>
+												{value.map((subValue) => (
+													<SidebarMenuSubItem key={subValue.id}>
+														<SidebarMenuSubButton asChild>
+															<Link
+																href={`/integrations/gmail/${item.id}/${subValue.id}`}
+																className="relative fade-text !truncate min-w-0"
+															>
+																{subValue.name}
+															</Link>
+														</SidebarMenuSubButton>
+													</SidebarMenuSubItem>
+												))}
+											</SidebarMenuSub>
+										</CollapsibleContent>
+									</Collapsible>
+								) : (
+									<SidebarMenuSubButton asChild>
+										<Link
+											href={`/integrations/gmail/${item.id}/${value.id}`}
+											className="relative fade-text !truncate min-w-0"
+										>
+											{value.name}
+										</Link>
+									</SidebarMenuSubButton>
+								)}
 							</SidebarMenuSubItem>
 						))}
 					</SidebarMenuSub>

@@ -9,14 +9,17 @@ import { ErrorState } from "@/components/error-state"
 
 type EmailListProp = {
 	integrationId: string
+	labelId: string
 }
 
-export function EmailList({ integrationId }: EmailListProp) {
+export function EmailList({ integrationId, labelId }: EmailListProp) {
 	const { data, fetchNextPage, hasNextPage, isFetchingNextPage, refetch, isLoading, isError } =
 		useInfiniteQuery({
-			queryKey: ["gmail-messages", integrationId],
+			queryKey: ["gmail-messages", labelId, integrationId],
 			queryFn: async ({ pageParam }) => {
-				return await api.integrations.fetchGmailMessages(integrationId, pageParam, 20)
+				return await api.integrations.fetchGmailMessages(integrationId, pageParam, 20, {
+					labelId,
+				})
 			},
 			initialPageParam: 1,
 			getNextPageParam: (lastPage) => {
@@ -60,7 +63,7 @@ export function EmailList({ integrationId }: EmailListProp) {
 
 	const handleEmailClick = (emailId: string) => {
 		handleMarkAsRead(emailId, true)
-		router.push(`${params.integrationId}/messages/${emailId}`)
+		router.push(`/integrations/gmail/${params.integrationId}/messages/${emailId}`)
 	}
 
 	const formatDate = (dateString: string): string => {
@@ -124,13 +127,15 @@ export function EmailList({ integrationId }: EmailListProp) {
 					emails.map((email) => {
 						const isLastItem = emails.at(-1)!.id === email.id
 
+						const isUnread = email.labelIds.includes("UNREAD")
+
 						return (
 							<div
 								ref={isLastItem ? bottomRef : null}
 								key={email.id}
 								onClick={() => handleEmailClick(email.id)}
 								className={`p-2 md:p-4 hover:bg-muted/30 cursor-pointer transition-colors border border-border  rounded-lg ${
-									email.isUnread ? "bg-muted/10" : ""
+									isUnread ? "bg-muted/60" : ""
 								}`}
 							>
 								<div className="flex items-start space-x-2 md:space-x-4">
@@ -145,7 +150,7 @@ export function EmailList({ integrationId }: EmailListProp) {
 											<div className="flex items-center space-x-2">
 												<span
 													className={`font-medium line-clamp-1 ${
-														email.isUnread ? "text-foreground" : "text-muted-foreground"
+														isUnread ? "text-foreground" : "text-muted-foreground"
 													}`}
 												>
 													{email.from || ""}
@@ -158,26 +163,13 @@ export function EmailList({ integrationId }: EmailListProp) {
 
 										<div
 											className={`font-medium md:mb-1 line-clamp-1 ${
-												email.isUnread ? "text-foreground" : "text-muted-foreground"
+												isUnread ? "text-foreground" : "text-muted-foreground"
 											}`}
 										>
 											{email.subject}
 										</div>
 
 										<p className="text-sm text-muted-foreground line-clamp-1">{email.snippet}</p>
-
-										{email.labelIds.length > 0 && (
-											<div className="hidden md:flex items-center space-x-2 mt-2">
-												{email.labelIds.map((label) => (
-													<span
-														key={label}
-														className="px-2 py-1 text-xs bg-chart-1 text-white rounded-full"
-													>
-														{label.toLowerCase()}
-													</span>
-												))}
-											</div>
-										)}
 									</div>
 								</div>
 							</div>

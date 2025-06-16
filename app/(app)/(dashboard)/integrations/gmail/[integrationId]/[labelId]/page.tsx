@@ -7,9 +7,10 @@ import { Button } from "@/components/ui/button"
 import { EmailComposer } from "@/components/gmail-integration/email-composer"
 import { cn } from "@/lib/utils"
 import { useIsMobile } from "@/hooks/use-mobile"
+import useHash from "@/hooks/use-hash"
 
 export default function GmailIntegrationViewPage() {
-	const { integrationId } = useParams<{ integrationId: string }>()
+	const { integrationId, labelId } = useParams<{ integrationId: string; labelId: string }>()
 
 	const router = useRouter()
 
@@ -44,9 +45,9 @@ export default function GmailIntegrationViewPage() {
 	return (
 		<div className="bg-background text-foreground pb-6 h-full flex flex-col min-h-0">
 			<div className="flex items-center justify-between mb-4 md:mb-6">
-				<div className={cn("flex items-center", "space-x-4")}>
+				<div className={cn("flex items-center", "space-x-3")}>
 					<Mail />
-					<h1 className="text-2xl font-bold text-primary">Inbox</h1>
+					<h1 className="text-2xl font-bold text-primary">Gmail</h1>
 				</div>
 
 				<Button onClick={handleComposeMail} variant="outline" className="cursor-pointer">
@@ -65,12 +66,12 @@ export default function GmailIntegrationViewPage() {
 							/>
 						</div>
 					) : (
-						<EmailList integrationId={integrationId} />
+						<EmailList integrationId={integrationId} labelId={labelId} />
 					)}
 				</>
 			) : (
 				<>
-					<EmailList integrationId={integrationId} />
+					<EmailList integrationId={integrationId} labelId={labelId} />
 					{displayComposer && (
 						<div className="flex-1 flex flex-col min-h-0 fixed bottom-0 right-0 z-10 m-7 w-3xl h-3/4 rounded-lg border border-border overflow-clip shadow-lg divide-y divide-border">
 							<div className="bg-card px-3 py-1 flex justify-between items-center">
@@ -80,17 +81,6 @@ export default function GmailIntegrationViewPage() {
 									variant="ghost"
 									size="sm"
 									onClick={() => {
-										{
-											displayComposer ? (
-												<EmailComposer
-													onSendDone={onSendComplete}
-													isReply={false}
-													integrationId={integrationId}
-												/>
-											) : (
-												<EmailList integrationId={integrationId} />
-											)
-										}
 										router.push(pathname)
 									}}
 								>

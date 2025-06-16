@@ -114,7 +114,16 @@ export async function syncGoogleCalendarEvents(integrationId: string, month: Dat
 	)
 }
 
-export async function fetchGmailMessages(integrationId: string, page: number, limit: number) {
+export async function fetchGmailMessages(
+	integrationId: string,
+	page: number,
+	limit: number,
+	{
+		labelId,
+	}: {
+		labelId?: string
+	} = {}
+) {
 	const response = await wrapper(() =>
 		request.get<PaginatedApiDataResponse<PartialGmailMessage[]>>(
 			`/integrations/gmail/${integrationId}/messages`,
@@ -122,6 +131,7 @@ export async function fetchGmailMessages(integrationId: string, page: number, li
 				params: {
 					page,
 					limit,
+					labelId,
 				},
 			}
 		)
