@@ -80,6 +80,44 @@ export async function connectCalendar() {
 	return response.data
 }
 
+export async function reconnectCalendar(integrationId: string) {
+	openPopup(buildOAuthUrl("https://www.googleapis.com/auth/calendar email openid profile"))
+	let code
+	try {
+		code = await getOAuthCode()
+	} catch (err) {
+		throw new Error(`Oauth failed`)
+	}
+
+	const response = await wrapper(() =>
+		request.post(`/integrations/google-calendar/${integrationId}/reconnect`, {
+			code,
+			integrationId,
+		})
+	)
+
+	return response.data
+}
+
+export async function reconnectGmail(integrationId: string) {
+	openPopup(buildOAuthUrl("https://www.googleapis.com/auth/gmail.modify email openid profile"))
+	let code
+	try {
+		code = await getOAuthCode()
+	} catch (err) {
+		throw new Error(`Oauth failed`)
+	}
+
+	const response = await wrapper(() =>
+		request.post(`/integrations/gmail/${integrationId}/reconnect`, {
+			code,
+			integrationId,
+		})
+	)
+
+	return response.data
+}
+
 export async function disconnectCalendar(id: string) {
 	const response = await wrapper(() => request.delete(`/integrations/google-calendar/${id}`))
 	return response.data

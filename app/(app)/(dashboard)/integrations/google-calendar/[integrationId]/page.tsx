@@ -159,6 +159,10 @@ const CalendarPage = () => {
 			})
 			toast("Calender events from selected months synced")
 		},
+
+		onError: (error) => {
+			toast.error(`Failed to sync calendar events: ${error.message}`)
+		},
 	})
 
 	function sync() {

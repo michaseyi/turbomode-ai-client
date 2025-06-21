@@ -1,12 +1,15 @@
 "use client"
 import { useState } from "react"
-import { Mail, Plus, X, Loader2, AlertTriangle, RefreshCw, Inbox } from "lucide-react"
+import { Mail, Plus, X, Loader2, AlertTriangle, RefreshCw, Inbox, RefreshCcw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { GmailIntegration } from "@/types/api"
 import { cn } from "@/lib/utils"
 import { ErrorState } from "../error-state"
 import { EmptyState } from "../empty-state"
 import { LoadingState } from "../loading-state"
+import { toast } from "sonner"
+import { useMutation } from "@tanstack/react-query"
+import { api } from "@/lib/api"
 
 interface ConnectedAccountsProps {
 	accounts: GmailIntegration[]
@@ -40,7 +43,25 @@ export function ConnectedAccounts({
 		onRemoveAccount(id)
 	}
 
-	const error = {}
+	const reconnectGmailMutation = useMutation({
+		mutationKey: ["reconnect-gmail"],
+		mutationFn: async (integrationId: string) => {
+			return await api.integrations.reconnectGmail(integrationId)
+		},
+		onError: (err) => {
+			toast(err.message)
+		},
+		onSuccess: () => {
+			toast("Gmail reconnected successfully")
+		},
+	})
+
+	function handleReconnect(integrationId: string) {
+		if (!integrationId) return
+		reconnectGmailMutation.mutate(integrationId)
+	}
+
+	const disabled = isDisconnecting || reconnectGmailMutation.isPending
 	return (
 		<div className="rounded-xl border bg-card/60 p-5 shadow-sm">
 			<div className="mb-5 flex items-center justify-between">
@@ -94,19 +115,34 @@ export function ConnectedAccounts({
 									</p>
 								</div>
 							</div>
-							<Button
-								variant="ghost"
-								size="sm"
-								onClick={() => handleDisconnect(integration.id)}
-								disabled={isDisconnecting}
-								className="h-8 px-2 text-sm text-muted-foreground hover:text-destructive"
-							>
-								{isDisconnecting && isDisconnectingId === integration.id ? (
-									<Loader2 className="h-4 w-4 animate-spin" />
-								) : (
-									<X className="h-4 w-4" />
-								)}
-							</Button>
+							<div>
+								<Button
+									variant="ghost"
+									size="sm"
+									onClick={() => handleReconnect(integration.id)}
+									disabled={disabled}
+									className="h-8 px-2 text-sm text-muted-foreground"
+								>
+									{reconnectGmailMutation.isPending ? (
+										<Loader2 className="h-4 w-4 animate-spin" />
+									) : (
+										<RefreshCcw className="h-4 w-4" />
+									)}
+								</Button>
+								<Button
+									variant="ghost"
+									size="sm"
+									onClick={() => handleDisconnect(integration.id)}
+									disabled={disabled}
+									className="h-8 px-2 text-sm text-muted-foreground hover:text-destructive"
+								>
+									{isDisconnecting && isDisconnectingId === integration.id ? (
+										<Loader2 className="h-4 w-4 animate-spin" />
+									) : (
+										<X className="h-4 w-4" />
+									)}
+								</Button>
+							</div>
 						</div>
 					))}
 				</div>

@@ -8,7 +8,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { Card } from "@/components/ui/card"
 import { Calendar, Check } from "lucide-react"
-import { CalendarIntegration } from "@/types/api"
 
 export default function CalendarIntegrationPage() {
 	const queryClient = useQueryClient()

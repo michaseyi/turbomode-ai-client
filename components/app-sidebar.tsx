@@ -219,44 +219,52 @@ function GmailIntegrationSidebarGroup({ item }: { item: GmailIntegration }) {
 		[key: string]: { id: string; name: string }[] | { id: string; name: string }
 	}
 	const categories = useMemo(() => {
-		return item.gmail.messageLabels.reduce<Categories>((acc, category) => {
-			// ignore list
-			if (["yellow_star", "chat", "trash"].includes(category.labelId.toLowerCase())) {
-				return acc
-			}
+		return item.gmail.messageLabels.reduce<Categories>(
+			(acc, category) => {
+				// ignore list
+				if (["yellow_star", "chat", "trash"].includes(category.labelId.toLowerCase())) {
+					return acc
+				}
 
-			if (category.labelId.toLowerCase().startsWith("category")) {
-				const name = category.labelName.substring("category_".length)
-				const group = "Categories"
-				if (!acc[group]) {
-					acc[group] = []
-				}
-				if (Array.isArray(acc[group])) {
-					acc[group].push({
+				if (category.labelId.toLowerCase().startsWith("category")) {
+					const name = category.labelName.substring("category_".length)
+					const group = "Categories"
+					if (!acc[group]) {
+						acc[group] = []
+					}
+					if (Array.isArray(acc[group])) {
+						acc[group].push({
+							id: category.labelId,
+							name: name.length > 1 ? name[0].toUpperCase() + name.slice(1).toLowerCase() : name,
+						})
+					}
+				} else if (category.labelId.toLowerCase().startsWith("label")) {
+					const name = category.labelName
+					const group = "Labels"
+					if (!acc[group]) {
+						acc[group] = []
+					}
+					if (Array.isArray(acc[group])) {
+						acc[group].push({
+							id: category.labelId,
+							name,
+						})
+					}
+				} else {
+					acc[category.labelId] = {
 						id: category.labelId,
-						name: name.length > 1 ? name[0].toUpperCase() + name.slice(1).toLowerCase() : name,
-					})
+						name: category.labelName[0].toUpperCase() + category.labelName.slice(1).toLowerCase(),
+					}
 				}
-			} else if (category.labelId.toLowerCase().startsWith("label")) {
-				const name = category.labelName
-				const group = "Labels"
-				if (!acc[group]) {
-					acc[group] = []
-				}
-				if (Array.isArray(acc[group])) {
-					acc[group].push({
-						id: category.labelId,
-						name,
-					})
-				}
-			} else {
-				acc[category.labelId] = {
-					id: category.labelId,
-					name: category.labelName[0].toUpperCase() + category.labelName.slice(1).toLowerCase(),
-				}
+				return acc
+			},
+			{
+				Generated: {
+					id: "GENERATED",
+					name: "Generated (agent)",
+				},
 			}
-			return acc
-		}, {})
+		)
 	}, [item.gmail.messageLabels])
 
 	return (
@@ -265,7 +273,7 @@ function GmailIntegrationSidebarGroup({ item }: { item: GmailIntegration }) {
 				<CollapsibleTrigger asChild>
 					<SidebarMenuButton asChild>
 						<button
-							className="flex items-center justify-between cursor-pointer"
+							className="flex items-center cursor-pointer"
 							title={`Gmail (${item.gmail.email})`}
 						>
 							<ChevronRight
@@ -366,15 +374,15 @@ function IntegrationSidebarGroup() {
 								<SidebarMenuButton asChild>
 									<Link href={`/integrations/${typeMap.get(item.type)}/${item.id}`}>
 										<span className="!text-clip relative fade-text">
-											{item.type === "Gmail" ? (
+											{/* {item.type === "Gmail" ? (
 												<>
 													{item.type} ({item.gmail.email})
 												</>
-											) : (
-												<>
-													{item.type} ({item.gCalendar.email})
-												</>
-											)}
+											) : ( */}
+											<>
+												{item.type} ({item.gCalendar.email})
+											</>
+											{/* )} */}
 										</span>
 									</Link>
 								</SidebarMenuButton>

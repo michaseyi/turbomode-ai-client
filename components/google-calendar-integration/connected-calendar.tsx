@@ -1,10 +1,13 @@
 "use client"
-import { Calendar, Plus, X, Loader2 } from "lucide-react"
+import { Calendar, Plus, X, Loader2, RefreshCcw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { CalendarIntegration } from "@/types/api"
 import { ErrorState } from "../error-state"
 import { EmptyState } from "../empty-state"
 import { LoadingState } from "../loading-state"
+import { useMutation } from "@tanstack/react-query"
+import { api } from "@/lib/api"
+import { toast } from "sonner"
 
 interface ConnectedCalendarProps {
 	account?: CalendarIntegration
@@ -27,6 +30,24 @@ export function ConnectedCalendar({
 	isLoadingError,
 	refetch,
 }: ConnectedCalendarProps) {
+	const reconnectCalendarMutation = useMutation({
+		mutationKey: ["reconnect-calendar"],
+		mutationFn: async (integrationId: string) => {
+			return await api.integrations.reconnectCalendar(integrationId)
+		},
+		onError: (err) => {
+			toast(err.message)
+		},
+		onSuccess: () => {
+			toast("Google calendar reconnected successfully")
+		},
+	})
+
+	function handleReconnect(integrationId: string) {
+		reconnectCalendarMutation.mutate(integrationId)
+	}
+
+	const disabled = isDisconnecting || reconnectCalendarMutation.isPending
 	return (
 		<div className="rounded-xl border bg-card/60 p-5 shadow-sm">
 			<div className="mb-5 flex items-center justify-between">
@@ -73,19 +94,35 @@ export function ConnectedCalendar({
 							</p>
 						</div>
 					</div>
-					<Button
-						variant="ghost"
-						size="sm"
-						onClick={() => onDisconnect(account.id)}
-						disabled={isDisconnecting}
-						className="h-8 px-2 text-sm text-muted-foreground hover:text-destructive"
-					>
-						{isDisconnecting ? (
-							<Loader2 className="h-4 w-4 animate-spin" />
-						) : (
-							<X className="h-4 w-4" />
-						)}
-					</Button>
+
+					<div>
+						<Button
+							variant="ghost"
+							size="sm"
+							onClick={() => handleReconnect(account.id)}
+							disabled={disabled}
+							className="h-8 px-2 text-sm text-muted-foreground"
+						>
+							{reconnectCalendarMutation.isPending ? (
+								<Loader2 className="h-4 w-4 animate-spin" />
+							) : (
+								<RefreshCcw className="h-4 w-4" />
+							)}
+						</Button>
+						<Button
+							variant="ghost"
+							size="sm"
+							onClick={() => onDisconnect(account.id)}
+							disabled={disabled}
+							className="h-8 px-2 text-sm text-muted-foreground hover:text-destructive"
+						>
+							{isDisconnecting ? (
+								<Loader2 className="h-4 w-4 animate-spin" />
+							) : (
+								<X className="h-4 w-4" />
+							)}
+						</Button>
+					</div>
 				</div>
 			)}
 		</div>
