@@ -259,9 +259,9 @@ function GmailIntegrationSidebarGroup({ item }: { item: GmailIntegration }) {
 				return acc
 			},
 			{
-				Generated: {
-					id: "GENERATED",
-					name: "Generated (agent)",
+				AGENT_REPLIES: {
+					id: "GENERATED_REPLIES",
+					name: "Agent replies",
 				},
 			}
 		)

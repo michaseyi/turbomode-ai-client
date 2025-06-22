@@ -4,6 +4,7 @@ import React, { createContext, useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { api } from "@/lib/api"
+import { useAgentContextStore } from "@/stores/agent-context"
 
 export type ActionChatT = {
 	initiate: (message: string) => Promise<void>
@@ -38,8 +39,11 @@ export function ActionChatProvider({ children }: ActionChatProviderProp) {
 		queryClient.invalidateQueries({ queryKey: ["actions-list"] })
 	}
 
+	const clear = useAgentContextStore((state) => state.clear)
+
 	async function reset() {
 		setPrompt(null)
+		clear()
 	}
 
 	return (

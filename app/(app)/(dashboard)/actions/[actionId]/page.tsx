@@ -21,6 +21,7 @@ import { cn } from "@/lib/utils"
 import { useActionChat } from "@/hooks/use-action-chat"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { CodeBlock } from "@/components/code-block"
+import { AgentContext } from "@/components/chat/agent-context"
 
 function AgentMessage({ message }: { message: AgentMessageType }) {
 	return (
@@ -44,16 +45,28 @@ function AgentMessage({ message }: { message: AgentMessageType }) {
 
 function UserMessage({ message }: { message: UserMessageType }) {
 	const user = useAuthUser()
+
+	const context: [] = (message as any).metadata?.context || []
+
 	return (
 		<div className="flex justify-start mb-3">
-			<div className={`p-3 rounded-lg shadow bg-message text-sidebar-foreground flex gap-x-2`}>
-				<Avatar className="h-6.5 w-6.5">
-					<AvatarFallback className="bg-foreground font-bold text-background text-sm">
-						{user.firstName.at(0)}
-						{user.lastName.at(0)}
-					</AvatarFallback>
-				</Avatar>
-				<pre className="flex-auto text-wrap">{message.content}</pre>
+			<div className={`p-3 rounded-xl shadow bg-message text-sidebar-foreground min-w-0`}>
+				<div className="flex gap-x-2">
+					<Avatar className="h-6.5 w-6.5">
+						<AvatarFallback className="bg-foreground font-bold text-background text-sm">
+							{user.firstName.at(0)}
+							{user.lastName.at(0)}
+						</AvatarFallback>
+					</Avatar>
+					<pre className="flex-auto text-wrap">{message.content}</pre>
+				</div>
+				{context.length > 0 && (
+					<div className="flex mt-3 overflow-x-auto scrollbar-hidden min-w-0 gap-2">
+						{context.map((ctx: any, id) => (
+							<AgentContext key={id} name="name" type={ctx.type} metadata={ctx} />
+						))}
+					</div>
+				)}
 			</div>
 		</div>
 	)

@@ -1,12 +1,13 @@
-import { Box, Mic, Paperclip, Send, Square } from "lucide-react"
-import { FormEventHandler, forwardRef } from "react"
+import { FormEventHandler, forwardRef, useState } from "react"
+import { Mic, Paperclip, Send } from "lucide-react"
+import { AgentContext } from "./agent-context"
+import { useAgentContextStore } from "@/stores/agent-context"
+import { useShallow } from "zustand/react/shallow"
 
 type ChatInputProp = {
 	onSubmit: (message: string) => void
 	disabled: boolean
 }
-
-forwardRef
 
 export const ChatInput = forwardRef<HTMLTextAreaElement, ChatInputProp>(
 	({ onSubmit, disabled }, ref) => {
@@ -15,9 +16,13 @@ export const ChatInput = forwardRef<HTMLTextAreaElement, ChatInputProp>(
 
 			const form = e.target as HTMLFormElement
 			const newChatInput = form.newChatInput.value as string
-			form.newChatInput.value = ""
 			onSubmit(newChatInput)
+			form.newChatInput.value = ""
 		}
+
+		const [removeContext, contexts] = useAgentContextStore(
+			useShallow((state) => [state.removeContext, state.contexts])
+		)
 
 		return (
 			<form
@@ -26,6 +31,19 @@ export const ChatInput = forwardRef<HTMLTextAreaElement, ChatInputProp>(
 				onSubmit={handleFormSubmit}
 			>
 				<div>
+					{contexts.length > 0 && (
+						<div className="pt-3 flex gap-3 overflow-x-auto scrollbar-hidden mx-3">
+							{contexts.map((context) => (
+								<AgentContext
+									key={context.id}
+									name={context.name}
+									type={context.type}
+									metadata={context.metadata}
+									onRemove={() => removeContext(context.id)}
+								/>
+							))}
+						</div>
+					)}
 					<div>
 						<textarea
 							ref={ref}

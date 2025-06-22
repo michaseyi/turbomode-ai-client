@@ -1,7 +1,7 @@
 "use client"
 import { BlockNoteView } from "@blocknote/mantine"
 import { useCreateBlockNote } from "@blocknote/react"
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { Send, Loader2 } from "lucide-react"
 
 import "@blocknote/mantine/style.css"
@@ -15,6 +15,7 @@ import { toast } from "sonner"
 
 export type EmailComposerProps = {
 	integrationId: string
+	initial?: string
 	onSendDone?: () => void
 } & (
 	| {
@@ -67,6 +68,12 @@ export function EmailComposer(props: EmailComposerProps) {
 				  }
 		)
 	}
+
+	useEffect(() => {
+		if (props.initial) {
+			editor.pasteHTML(props.initial)
+		}
+	}, [props.initial])
 
 	function reset() {
 		setTo("")

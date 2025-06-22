@@ -17,14 +17,21 @@ import {
 	Clock,
 	User,
 	Printer,
+	Store,
+	Loader2,
+	MessageCircleReply,
 } from "lucide-react"
 import { useParams, useRouter } from "next/navigation"
 import { LoadingState } from "@/components/loading-state"
-import { useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import { api } from "@/lib/api"
 import { ErrorState } from "@/components/error-state"
 import { IsolatedHtml } from "@/components/isolated-html"
 import { EmailComposer } from "@/components/gmail-integration/email-composer"
+import { useAgentContextStore } from "@/stores/agent-context"
+import { useShallow } from "zustand/react/shallow"
+import { Button } from "@/components/ui/button"
+import { toast } from "sonner"
 
 export default function EmailDetailPage() {
 	const { messageId, integrationId } = useParams<{
@@ -49,14 +56,6 @@ export default function EmailDetailPage() {
 	})
 
 	const [replyMode, setReplyMode] = useState<"none" | "reply" | "replyAll" | "forward">("none")
-
-	const formatFileSize = (bytes: number): string => {
-		if (bytes === 0) return "0 Bytes"
-		const k = 1024
-		const sizes = ["Bytes", "KB", "MB", "GB"]
-		const i = Math.floor(Math.log(bytes) / Math.log(k))
-		return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i]
-	}
 
 	const formatDate = (dateString: string): string => {
 		const date = new Date(dateString)
@@ -89,6 +88,59 @@ export default function EmailDetailPage() {
 		window.print()
 	}
 
+	const [contexts, addContext] = useAgentContextStore(
+		useShallow((state) => [state.contexts, state.addContext])
+	)
+
+	function handleAddContext() {
+		if (!email) return
+
+		if (contexts.find((c) => c.id === messageId)) {
+			return
+		}
+
+		const context = {
+			id: messageId,
+			name: email.subject!,
+			type: "email",
+			metadata: {
+				integrationId,
+				messageId,
+			},
+		}
+
+		addContext(context)
+
+		toast.success("Gmail message added to context")
+	}
+
+	const [autoReplyMessage, setAutoReplyMessage] = useState<string>("")
+
+	const replyGenerationMutation = useMutation({
+		mutationKey: ["gmail-reply-generation", integrationId, messageId],
+		mutationFn: async () => {
+			return (
+				await api.agents.invokeAgent({
+					agentId: "email-reply-agent",
+					context: [
+						{
+							type: "email",
+							integrationId,
+							messageId,
+						},
+					],
+				})
+			).data
+		},
+		onSuccess: (data) => {
+			setAutoReplyMessage(data.body)
+		},
+
+		onError: () => {
+			toast.error("Failed to generate reply")
+		},
+	})
+
 	return (
 		<div className="pb-4">
 			{isLoading ? (
@@ -105,7 +157,6 @@ export default function EmailDetailPage() {
 				</div>
 			) : (
 				<div>
-					{/* Header */}
 					<div className="flex items-center justify-between mb-6">
 						<div className="flex items-center space-x-4">
 							<button
@@ -118,18 +169,18 @@ export default function EmailDetailPage() {
 
 						<div className="flex items-center space-x-2">
 							<button
+								onClick={handleAddContext}
+								className="p-2 hover:bg-muted rounded-lg transition-colors"
+								title="Add to context"
+							>
+								<Store className="w-5 h-5" />
+							</button>
+							<button
 								onClick={() => handleReply("reply")}
 								className="p-2 hover:bg-muted rounded-lg transition-colors"
 								title="Reply"
 							>
 								<Reply className="w-5 h-5" />
-							</button>
-							<button
-								onClick={() => handleReply("replyAll")}
-								className="p-2 hover:bg-muted rounded-lg transition-colors"
-								title="Reply All"
-							>
-								<ReplyAll className="w-5 h-5" />
 							</button>
 							<button
 								onClick={() => handleReply("forward")}
@@ -236,9 +287,31 @@ export default function EmailDetailPage() {
 					</div>
 
 					<div className="mt-6">
-						<h3 className="font-medium mb-4">Quick Reply</h3>
+						<div className="flex items-center justify-between">
+							<h3 className="font-medium mb-4">Quick Reply</h3>
+
+							<Button
+								disabled={replyGenerationMutation.isPending}
+								onClick={() => replyGenerationMutation.mutate()}
+								className="rounded-full"
+								variant="ghost"
+								size="icon"
+								title="Auto generate reply"
+							>
+								{replyGenerationMutation.isPending ? (
+									<Loader2 className="animate-spin" />
+								) : (
+									<MessageCircleReply />
+								)}
+							</Button>
+						</div>
 						<div className="border border-border rounded-lg overflow-hidden shadow-xs h-[200px]">
-							<EmailComposer integrationId={integrationId} isReply={true} messageId={messageId} />
+							<EmailComposer
+								initial={autoReplyMessage}
+								integrationId={integrationId}
+								isReply={true}
+								messageId={messageId}
+							/>
 						</div>
 					</div>
 				</div>

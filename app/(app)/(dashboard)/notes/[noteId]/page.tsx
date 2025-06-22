@@ -15,7 +15,9 @@ import { UpdateNoteProps } from "@/types/api"
 import { LoadingState } from "@/components/loading-state"
 import { ErrorState } from "@/components/error-state"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, CheckCircle2, Cloud, CloudOff, Loader2, WifiOff } from "lucide-react"
+import { ArrowLeft, CheckCircle2, Cloud, CloudOff, Loader2, Store, WifiOff } from "lucide-react"
+import { useAgentContextStore } from "@/stores/agent-context"
+import { useShallow } from "zustand/react/shallow"
 
 type SaveStatus = "saved" | "saving" | "pending" | "error" | "offline"
 
@@ -230,6 +232,31 @@ export default function NoteItemPage() {
 		)
 	}
 
+	const [contexts, addContext] = useAgentContextStore(
+		useShallow((state) => [state.contexts, state.addContext])
+	)
+
+	function handleAddContext() {
+		if (!data) return
+
+		if (contexts.find((c) => c.metadata.noteId === data.data.id)) {
+			return
+		}
+
+		const note = data.data
+
+		addContext({
+			id: note.id,
+			name: note.title,
+			type: "note",
+			metadata: {
+				noteId: note.id,
+			},
+		})
+
+		toast.success("Note added to context")
+	}
+
 	return isLoading ? (
 		<LoadingState />
 	) : isError ? (
@@ -239,7 +266,7 @@ export default function NoteItemPage() {
 			}}
 		/>
 	) : (
-		<div className="h-full note-editor bg-background text-foreground">
+		<div className="h-full note-editor bg-backgroun text-foreground">
 			<div className="mb-6 flex gap-x-2">
 				<div className="flex items-center space-x-4">
 					<button
@@ -258,12 +285,21 @@ export default function NoteItemPage() {
 						placeholder="Title..."
 					/>
 				</div>
-				<div className="flex items-center justify-end ml-auto pr-2 min-w-24">
+				<div className="flex items-center justify-end ml-auto pr-2 min-w-24 gap-2">
 					<SaveStatusIndicator />
+					<button
+						onClick={handleAddContext}
+						className="p-2 hover:bg-muted rounded-lg transition-colors"
+						title="Add to context"
+					>
+						<Store className="w-5 h-5" />
+					</button>
 				</div>
 			</div>
-			<div className="border border-border rounded-lg pb-6 pt-3">
-				<BlockNoteView editor={editor} data-theming-css-variables-demo />
+			<div className="pb-6">
+				<div className="border border-border rounded-lg pb-6 pt-3">
+					<BlockNoteView editor={editor} data-theming-css-variables-demo />
+				</div>
 			</div>
 		</div>
 	)
