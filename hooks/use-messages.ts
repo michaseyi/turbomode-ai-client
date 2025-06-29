@@ -95,7 +95,9 @@ export function useMessages(actionId: string) {
 		)
 
 		const source = new EventSource(
-			`http://localhost:3000/api/v1/actions/${actionId}/stream?token=${encodeURIComponent(
+			`${
+				process.env.NEXT_PUBLIC_API_BASE_URL
+			}/actions/${actionId}/stream?token=${encodeURIComponent(
 				localStorage.getItem("accessToken")!
 			)}&prompt=${encodeURIComponent(message)}&context=${encodedContexts}`
 		)
