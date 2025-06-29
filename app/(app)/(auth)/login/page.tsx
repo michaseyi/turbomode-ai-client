@@ -4,9 +4,10 @@ import LoginBanner from "@/assets/images/banner.png"
 
 import TurboModeAI from "@/assets/images/logo.png"
 import Image from "next/image"
-import { useEffect } from "react"
+import { Suspense, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-export default function LoginPage() {
+
+function Login() {
 	const router = useRouter()
 	const params = useSearchParams()
 
@@ -40,5 +41,13 @@ export default function LoginPage() {
 				/>
 			</div>
 		</div>
+	)
+}
+
+export default function LoginPage() {
+	return (
+		<Suspense>
+			<Login />
+		</Suspense>
 	)
 }
