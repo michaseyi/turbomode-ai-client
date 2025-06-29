@@ -115,7 +115,6 @@
 	--sidebar-ring: oklch(0.552 0.016 285.938);
 }
 
-
 .scrollbar-hidden {
 	-ms-overflow-style: none;
 	scrollbar-width: none;
@@ -341,5 +340,5 @@
 	/* scrollbar-gutter: stable; */
 	scrollbar-width: thin; /* For Firefox */
 	scrollbar-color: var(--sidebar-accent) transparent; /* Thumb color and transparent track for Firefox */
-	font-family: var(--font-ibm-plex-sans);
+	font-family: var(--font-spectral);
 }

@@ -22,8 +22,9 @@ import { useActionChat } from "@/hooks/use-action-chat"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { CodeBlock } from "@/components/code-block"
 import { AgentContext } from "@/components/chat/agent-context"
+import { UIMessage } from "@/types/api"
 
-function AgentMessage({ message }: { message: AgentMessageType }) {
+function AgentMessage({ message }: { message: UIMessage }) {
 	return (
 		<div className={`flex justify-start mb-3`}>
 			{message.isStarting ? (
@@ -43,7 +44,7 @@ function AgentMessage({ message }: { message: AgentMessageType }) {
 	)
 }
 
-function UserMessage({ message }: { message: UserMessageType }) {
+function UserMessage({ message }: { message: UIMessage }) {
 	const user = useAuthUser()
 
 	const context: [] = (message as any).metadata?.context || []
@@ -72,7 +73,7 @@ function UserMessage({ message }: { message: UserMessageType }) {
 	)
 }
 
-const ChatMessageItem: React.FC<{ message: ChatMessage }> = ({ message }) => {
+const ChatMessageItem: React.FC<{ message: UIMessage }> = ({ message }) => {
 	const isUser = message.role === "user"
 
 	if (isUser) {
